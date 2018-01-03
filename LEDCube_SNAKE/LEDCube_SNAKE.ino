@@ -10,13 +10,14 @@ int dataPin = 11;
  
 byte pinVals[8];
 int zLayer = 2;
-int xc = 0;
-int yc = 0;
+int xc = 7;
+int yc = 5;
 
 const int sw_pin = 1;
 const int x_pin = 0;
 const int y_pin = 1;
- 
+
+
 void setup(){
     //layer pins
   for(int i = 2; i < 10; i++)
@@ -79,7 +80,7 @@ void light (int x, int y, int z){
   
 }
 
-void controlLight(int x_axe, int y_axe){
+void controlLight(int x_axe, int y_axe, int button){
   if(y_axe == 0){
     digitalWrite(zLayer, HIGH);
     zLayer++;
@@ -87,7 +88,32 @@ void controlLight(int x_axe, int y_axe){
     zLayer = 2;
     }
     light(xc, yc, zLayer);
+  }else if(y_axe == 1023){
+    digitalWrite(zLayer, HIGH);
+    zLayer--;
+    if(zLayer < 2){
+    zLayer = 9;
+    }
+    light(xc, yc, zLayer);
+  }else if(x_axe == 0){
+    yc++;
+    if(yc > 7){
+      yc = 0;
+    }
+    light(xc, yc, zLayer);
+  }else if(x_axe == 1023){
+    yc--;
+    if(yc < 0){
+      yc = 7;
+    }
+    light(xc, yc, zLayer);
   }
+}
+
+void randomLight(){
+  //digitalWrite(zLayer, HIGH);
+  //bitClear(pinVals[yc], xc);
+  light(random(8), random(8), random(2, 10));
 }
 
 void loop(){
@@ -98,7 +124,8 @@ void loop(){
   digitalWrite(latchPin, HIGH);
  
   //Increase for slower effect
-  //delay(1000);
+  //randomLight();
+  //delay(500);
  
   //Set the display bits
   bitClear(pinVals[yc], xc);
