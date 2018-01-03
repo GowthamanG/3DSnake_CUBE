@@ -80,7 +80,7 @@ void light (int x, int y, int z){
   
 }
 
-void controlLight(int x_axe, int y_axe, int button){
+void controlLight(int x_axe, int y_axe){
   if(y_axe == 0){
     digitalWrite(zLayer, HIGH);
     zLayer++;
@@ -116,6 +116,13 @@ void randomLight(){
   light(random(8), random(8), random(2, 10));
 }
 
+void flowLight(){
+  xc++;
+  if(xc > 7)
+    xc = 0;
+  bitSet(pinVals[yc], xc);
+}
+
 void loop(){
   digitalWrite(latchPin, LOW);
   for(int i = 0; i < 8; i++){
@@ -133,7 +140,9 @@ void loop(){
   //light(xc,yc,zLayer);
   //basic();
   controlLight(analogRead(x_pin), analogRead(y_pin));
-  
+
+  flowLight();
+  delay(50);
   
   bitSet(pinVals[yc], xc);
 
