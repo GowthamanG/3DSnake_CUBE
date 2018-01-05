@@ -1,39 +1,64 @@
-#include <TimerOne.h>
-#include <string.h>
-
-//Pin verbunden mit ST_CP 
+//Test an 8x8x8 LED cube
+ 
+ 
+//--- Pin connected to ST_CP of 74HC595
 int latchPin = 10;
-//Pin verbunden mit SH_CP
+//--- Pin connected to SH_CP of 74HC595
 int clockPin = 13;
-//Pin verbunden mit DS
+//--- Pin connected to DS of 74HC595
 int dataPin = 11;
-
-//Enthält Werte für alle Pins (0 oder 1)
-byte cube [8][8][8];
-
-
-void setup() {
-  // put your setup code here, to run once:
+ 
+byte pinVals[8];
+ int zLayer = 0;
+ int xc = 0;
+ int yc = 0;
+ 
+void setup(){
+    //layer pins
+  for(int i = 2; i < 10; i++)
+  {
+    pinMode(i, OUTPUT);
+    digitalWrite(i, LOW);
+  }
+ 
   pinMode(latchPin, OUTPUT);
   pinMode(clockPin, OUTPUT);
   pinMode(dataPin, OUTPUT);
-}
-
-void loop() {
  
-  for(int i = 0; i <= 8; i++){
-    digitalWrite(storePin, LOW);
-    for(int j = 0; i <= 8; i++){
-      for(int k = 0; i <= 8; i++){
-        cube[i][j][k] = 1;
-      }
-    }
-
-    digitalWrite(shiftPin, LOW);
-    digitalWrite(dataPin, cube[i][j][k]);
-    digitalWrite(shiftPin, HIGH);
-
-    digitalWrite(storePin, HIGH);
-  }
+  digitalWrite(latchPin,LOW);
+  digitalWrite(dataPin,LOW);
+  digitalWrite(clockPin,LOW);
+ 
+  bitSet(pinVals[0], 0);
+  digitalWrite(zLayer + 2, HIGH);
 }
-  
+ 
+void loop(){
+  digitalWrite(latchPin, LOW);
+  for(int i = 0; i < 8; i++){
+   shiftOut(dataPin, clockPin, MSBFIRST, pinVals[i]);
+  }
+  digitalWrite(latchPin, HIGH);
+ 
+  //Increase for slower effect
+  delay(50);
+ 
+  //Set the display bits
+  bitClear(pinVals[yc], xc);
+  xc++;
+  if(xc == 8){
+    xc = 0;
+    yc++;
+    if(yc == 8){
+      yc = 0;
+      //next z layer
+        digitalWrite(zLayer + 2, LOW);
+        zLayer++;
+        if(zLayer >= 8){
+          zLayer = 0;
+        }
+        digitalWrite(zLayer + 2, HIGH);
+    }
+  }
+  bitSet(pinVals[yc], xc);
+}

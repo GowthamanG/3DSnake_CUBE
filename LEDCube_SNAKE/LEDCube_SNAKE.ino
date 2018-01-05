@@ -1,5 +1,6 @@
 //Test an 8x8x8 LED cube
- 
+
+ //LEDS DIE NICHT FUNKTIOIEREN: x = 2, y = 1, z = 0; x = 1, y = 3, z  = 4; x = 0, y = 2, z = 7; x = 4, y = 4, z = 7
  
 //--- Pin connected to ST_CP of 74HC595
 int latchPin = 10;
@@ -10,8 +11,8 @@ int dataPin = 11;
  
 byte pinVals[8];
 int zLayer = 2;
-int xc = 7;
-int yc = 5;
+int xc = 4;
+int yc = 7;
 
 const int sw_pin = 1;
 const int x_pin = 0;
@@ -141,8 +142,8 @@ void loop(){
   //basic();
   controlLight(analogRead(x_pin), analogRead(y_pin));
 
-  flowLight();
-  delay(50);
+  //flowLight();
+  //delay(50);
   
   bitSet(pinVals[yc], xc);
 
