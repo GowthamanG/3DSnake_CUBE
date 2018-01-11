@@ -73,6 +73,76 @@ void basic(){
   }
 }
 
+void showLedNumbers(int number){
+  switch(number){
+    case 0: 
+      light(0, 1, 0);
+      light(0, 2, 0);
+      light(0, 3, 0);
+      light(0, 4, 0);
+      light(0, 5, 0);
+      light(0, 6, 0);
+      light(0, 1, 1);
+      light(0, 1, 2);
+      light(0, 1, 3);
+      light(0, 1, 4);
+      light(0, 1, 5);
+      light(0, 1, 6);
+      light(0, 1, 7);
+      light(0, 6, 1);
+      light(0, 6, 2);
+      light(0, 6, 3);
+      light(0, 6, 4);
+      light(0, 6, 5);
+      light(0, 6, 6);
+      light(0, 6, 7);
+      light(0, 5, 7);
+      light(0, 4, 7);
+      light(0, 3, 7);
+      light(0, 2, 7);
+      light(0, 1, 7);
+      light(0, 3, 5);
+      light(0, 4, 5);
+      light(0, 5, 5);
+      light(0, 3, 4);
+      light(0, 3, 3);
+      light(0, 3, 2);
+      light(0, 5, 4);
+      light(0, 5, 3);
+      light(0, 5, 2);
+      light(0, 4, 2);
+      /*
+      for(int x = 0; x < 8; x++){
+        for(int j = 1; j < 7; j++){
+          light(x, j, 0);
+          light(x, 6, j);
+          light(x, j, 7);
+        }
+        for(int k = 1; k < 8; k++)
+          light(x,1,k);
+        for(int l = 3; l < 6; l++){
+          light(x, l, 5);
+          light(x, 3, l-1);
+          light(x, 5, l-1);
+        }
+        light(x, 4, 2);
+      delay(500);
+      bitClear(pinVals[yc], xc);
+      }
+      */
+      break;
+    case 1: break; 
+    case 2: break;
+    case 3: break;
+    case 4: break;
+    case 5: break;
+    case 6: break;
+    case 7: break;
+    case 8: break;
+    case 9: break;
+  }
+}
+
 void light (int x, int y, int z){
   xc = x;
   yc = y;
