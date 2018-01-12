@@ -8,15 +8,33 @@ int latchPin = 10;
 int clockPin = 13;
 //--- Pin connected to DS of 74HC595
 int dataPin = 11;
+
+// Pin connected to the Button to change the height
+int buttonPin = 10;
+int buttonState = 0;
  
 byte pinVals[8];
-int zLayer = 2;
-int xc = 4;
+int zLayer = 1;
+int xc = 2;
 int yc = 7;
 
 const int sw_pin = 1;
 const int x_pin = 0;
 const int y_pin = 1;
+
+struct pos{
+  int x;
+  int y;
+  int z;
+};
+
+//Snake
+int lastInput;
+int head;
+int tail;
+int bodyLength;
+int direction;
+
 
 
 void setup(){
@@ -51,6 +69,8 @@ void setup(){
   digitalWrite(9, HIGH);
   digitalWrite(10, HIGH);
 
+  pinMode(buttonPin, INPUT); //Button
+
   light(xc,yc,zLayer);
 }
 
@@ -75,44 +95,9 @@ void basic(){
 
 void showLedNumbers(int number){
   switch(number){
-    case 0: 
-      light(0, 1, 0);
-      light(0, 2, 0);
-      light(0, 3, 0);
-      light(0, 4, 0);
-      light(0, 5, 0);
-      light(0, 6, 0);
-      light(0, 1, 1);
-      light(0, 1, 2);
-      light(0, 1, 3);
-      light(0, 1, 4);
-      light(0, 1, 5);
-      light(0, 1, 6);
-      light(0, 1, 7);
-      light(0, 6, 1);
-      light(0, 6, 2);
-      light(0, 6, 3);
-      light(0, 6, 4);
-      light(0, 6, 5);
-      light(0, 6, 6);
-      light(0, 6, 7);
-      light(0, 5, 7);
-      light(0, 4, 7);
-      light(0, 3, 7);
-      light(0, 2, 7);
-      light(0, 1, 7);
-      light(0, 3, 5);
-      light(0, 4, 5);
-      light(0, 5, 5);
-      light(0, 3, 4);
-      light(0, 3, 3);
-      light(0, 3, 2);
-      light(0, 5, 4);
-      light(0, 5, 3);
-      light(0, 5, 2);
-      light(0, 4, 2);
-      /*
+    case 0:
       for(int x = 0; x < 8; x++){
+        delay(1000);
         for(int j = 1; j < 7; j++){
           light(x, j, 0);
           light(x, 6, j);
@@ -126,10 +111,8 @@ void showLedNumbers(int number){
           light(x, 5, l-1);
         }
         light(x, 4, 2);
-      delay(500);
-      bitClear(pinVals[yc], xc);
       }
-      */
+      
       break;
     case 1: break; 
     case 2: break;
@@ -181,6 +164,7 @@ void controlLight(int x_axe, int y_axe){
   }
 }
 
+// Lights a random LED, use this for the apple
 void randomLight(){
   //digitalWrite(zLayer, HIGH);
   //bitClear(pinVals[yc], xc);
@@ -194,12 +178,25 @@ void flowLight(){
   bitSet(pinVals[yc], xc);
 }
 
+//Snake goes up while Button is pressed
+void buttonPressed(){
+  buttonState = digitalRead(buttonPin);
+  if (buttonState == HIGH){
+    
+  }
+  else{
+  }
+  
+}
+
 void loop(){
   digitalWrite(latchPin, LOW);
   for(int i = 0; i < 8; i++){
    shiftOut(dataPin, clockPin, MSBFIRST, pinVals[i]);
   }
   digitalWrite(latchPin, HIGH);
+
+  //buttonPressed(); //Check if the button is pressed, if it is pressed Snake goes up
  
   //Increase for slower effect
   //randomLight();
