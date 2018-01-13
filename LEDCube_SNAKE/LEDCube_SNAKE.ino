@@ -10,8 +10,10 @@ int clockPin = 13;
 int dataPin = 11;
 
 // Pin connected to the Button to change the height
-int buttonPin = 10;
-int buttonState = 0;
+int buttonPinUp = 12;
+int buttonStateUp = 0;
+int buttonPinDown = A5;
+int buttonStateDown = 0;
  
 byte pinVals[8];
 int zLayer = 1;
@@ -69,29 +71,12 @@ void setup(){
   digitalWrite(9, HIGH);
   digitalWrite(10, HIGH);
 
-  pinMode(buttonPin, INPUT); //Button
+  pinMode(buttonPinUp, INPUT); //Button Up
+  pinMode(buttonPinDown, INPUT); // Button Down
 
   light(xc,yc,zLayer);
 }
 
-void basic(){
-  //digitalWrite(zLayer, HIGH);
-        //zLayer++;
-        //if(zLayer == 10){
-        //  zLayer = 2;
-        //}
-        //digitalWrite(zLayer, LOW);
-  xc++;
-  if(xc == 8){
-    xc = 0;
-    yc++;
-    if(yc == 8){
-      yc = 0;
-      
-        
-    }
-  }
-}
 
 void showLedNumbers(int number){
   switch(number){
@@ -135,27 +120,25 @@ void light (int x, int y, int z){
 }
 
 void controlLight(int x_axe, int y_axe){
-  if(y_axe == 0){
-    digitalWrite(zLayer, HIGH);
-    zLayer++;
-    if(zLayer > 9){
-    zLayer = 2;
+  if(y_axe < 10){
+    xc--;
+    if(xc < 0){
+      xc = 7;
     }
     light(xc, yc, zLayer);
-  }else if(y_axe == 1023){
-    digitalWrite(zLayer, HIGH);
-    zLayer--;
-    if(zLayer < 2){
-    zLayer = 9;
+  }else if(y_axe > 1000){
+    xc++;
+    if(xc > 7){
+      xc = 0;
     }
     light(xc, yc, zLayer);
-  }else if(x_axe == 0){
+  }else if(x_axe < 10){
     yc++;
     if(yc > 7){
       yc = 0;
     }
     light(xc, yc, zLayer);
-  }else if(x_axe == 1023){
+  }else if(x_axe > 1000){
     yc--;
     if(yc < 0){
       yc = 7;
@@ -180,11 +163,25 @@ void flowLight(){
 
 //Snake goes up while Button is pressed
 void buttonPressed(){
-  buttonState = digitalRead(buttonPin);
-  if (buttonState == HIGH){
-    
+  buttonStateUp = digitalRead(buttonPinUp);
+  buttonStateDown = digitalRead(buttonPinDown);
+  if (buttonStateUp == HIGH){
+    digitalWrite(zLayer, HIGH);
+    zLayer++;
+    if(zLayer > 9){
+    zLayer = 2;
+    }
+    light(xc, yc, zLayer);
   }
-  else{
+  else if (buttonStateDown == HIGH){
+    digitalWrite(zLayer, HIGH);
+    zLayer--;
+    if(zLayer < 2){
+      zLayer = 9;
+    }
+    light(xc, yc, zLayer);
+  } else{
+    light(xc, yc, zLayer);
   }
   
 }
@@ -196,7 +193,7 @@ void loop(){
   }
   digitalWrite(latchPin, HIGH);
 
-  //buttonPressed(); //Check if the button is pressed, if it is pressed Snake goes up
+  buttonPressed(); //Check if a button is pressed, if it is pressed Snake goes up or down
  
   //Increase for slower effect
   //randomLight();
