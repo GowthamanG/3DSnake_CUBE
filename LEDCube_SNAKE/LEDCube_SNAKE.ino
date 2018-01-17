@@ -41,9 +41,7 @@ int bodyLength;
 int direction;
 
 Led* led1;
-led1->x = 2;
-led1->y = 7;
-led1->z = 1;
+
 
 void light (int x, int y, int z){
   led1->x = x;
@@ -90,14 +88,17 @@ void randomLight(){
 }
 
 void flowLight(){
-  xc++;
-  if(xc > 7)
-    xc = 0;
+  led1->x += 1;;
+  if(led1->x > 7)
+    led1->x = 0;
   bitSet(pinVals[led1->y], led1->x);
 }
 
 //Snake goes up while Button is pressed
-void buttonPressed(int x, int y, int z){
+void buttonPressed(Led* l){
+  int x = l->x;
+  int y = l->y;
+  int z = l->z;
   buttonStateUp = digitalRead(buttonPinUp);
   buttonStateDown = digitalRead(buttonPinDown);
   if (buttonStateUp == HIGH){
@@ -157,6 +158,10 @@ void setup(){
 
   pinMode(buttonPinUp, INPUT); //Button Up
   pinMode(buttonPinDown, INPUT); // Button Down
+
+  led1->x = 2;
+  led1->y = 7;
+  led1->z = 1;
   
   light(led1->x, led1->y,led1->z);
 }
@@ -170,7 +175,7 @@ void loop(){
   }
   digitalWrite(latchPin, HIGH);
 
-  buttonPressed(led1->x, led1->y, led1->z); //Check if a button is pressed, if it is pressed Snake goes up or down
+  buttonPressed(led1); //Check if a button is pressed, if it is pressed Snake goes up or down
  
   //Increase for slower effect
   //randomLight();
