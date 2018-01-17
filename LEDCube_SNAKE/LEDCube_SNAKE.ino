@@ -16,19 +16,22 @@ int buttonPinDown = A5;
 int buttonStateDown = 0;
  
 byte pinVals[8];
-int zLayer = 1;
-int xc = 2;
-int yc = 7;
+//int zLayer = 1;
+//int xc = 2;
+//int yc = 7;
+
 
 const int sw_pin = 1;
 const int x_pin = 0;
 const int y_pin = 1;
 
-struct pos{
-  int x;
-  int y;
-  int z;
-};
+typedef struct Led{
+  int x, y, z;
+}Led;
+
+typedef struct LedList{
+  Led* head;
+}LedList;
 
 //Snake
 int lastInput;
@@ -36,6 +39,87 @@ int head;
 int tail;
 int bodyLength;
 int direction;
+
+Led* led1;
+led1->x = 2;
+led1->y = 7;
+led1->z = 1;
+
+void light (int x, int y, int z){
+  led1->x = x;
+  led1->y = y;
+  led1->z = z;
+  digitalWrite(led1->z, LOW);
+  
+}
+
+
+void controlLight(int x_axe, int y_axe, int x, int y, int z){
+  if(y_axe < 10){
+    x--;
+    if(x < 0){
+      x = 7;
+    }
+    light(x, y, z);
+  }else if(y_axe > 1000){
+    x++;
+    if(x > 7){
+      x = 0;
+    }
+    light(x, y, z);
+  }else if(x_axe < 10){
+    y++;
+    if(y > 7){
+      y = 0;
+    }
+    light(x, y, z);
+  }else if(x_axe > 1000){
+    y--;
+    if(y < 0){
+      y = 7;
+    }
+    light(x, y, z);
+  }
+}
+
+// Lights a random LED, use this for the apple
+void randomLight(){
+  //digitalWrite(zLayer, HIGH);
+  //bitClear(pinVals[yc], xc);
+  light(random(8), random(8), random(2, 10));
+}
+
+void flowLight(){
+  xc++;
+  if(xc > 7)
+    xc = 0;
+  bitSet(pinVals[led1->y], led1->x);
+}
+
+//Snake goes up while Button is pressed
+void buttonPressed(int x, int y, int z){
+  buttonStateUp = digitalRead(buttonPinUp);
+  buttonStateDown = digitalRead(buttonPinDown);
+  if (buttonStateUp == HIGH){
+    digitalWrite(z, HIGH);
+    z++;
+    if(z > 9){
+    z = 2;
+    }
+    light(x, y, z);
+  }
+  else if (buttonStateDown == HIGH){
+    digitalWrite(z, HIGH);
+    z--;
+    if(z < 2){
+      z = 9;
+    }
+    light(x, y, z);
+  } else{
+    light(x, y, z);
+  }
+  
+}
 
 
 
@@ -73,118 +157,11 @@ void setup(){
 
   pinMode(buttonPinUp, INPUT); //Button Up
   pinMode(buttonPinDown, INPUT); // Button Down
-
-  light(xc,yc,zLayer);
-}
-
-
-void showLedNumbers(int number){
-  switch(number){
-    case 0:
-      for(int x = 0; x < 8; x++){
-        delay(1000);
-        for(int j = 1; j < 7; j++){
-          light(x, j, 0);
-          light(x, 6, j);
-          light(x, j, 7);
-        }
-        for(int k = 1; k < 8; k++)
-          light(x,1,k);
-        for(int l = 3; l < 6; l++){
-          light(x, l, 5);
-          light(x, 3, l-1);
-          light(x, 5, l-1);
-        }
-        light(x, 4, 2);
-      }
-      
-      break;
-    case 1: break; 
-    case 2: break;
-    case 3: break;
-    case 4: break;
-    case 5: break;
-    case 6: break;
-    case 7: break;
-    case 8: break;
-    case 9: break;
-  }
-}
-
-void light (int x, int y, int z){
-  xc = x;
-  yc = y;
-  zLayer = z;
-  digitalWrite(zLayer, LOW);
   
+  light(led1->x, led1->y,led1->z);
 }
 
-void controlLight(int x_axe, int y_axe){
-  if(y_axe < 10){
-    xc--;
-    if(xc < 0){
-      xc = 7;
-    }
-    light(xc, yc, zLayer);
-  }else if(y_axe > 1000){
-    xc++;
-    if(xc > 7){
-      xc = 0;
-    }
-    light(xc, yc, zLayer);
-  }else if(x_axe < 10){
-    yc++;
-    if(yc > 7){
-      yc = 0;
-    }
-    light(xc, yc, zLayer);
-  }else if(x_axe > 1000){
-    yc--;
-    if(yc < 0){
-      yc = 7;
-    }
-    light(xc, yc, zLayer);
-  }
-}
 
-// Lights a random LED, use this for the apple
-void randomLight(){
-  //digitalWrite(zLayer, HIGH);
-  //bitClear(pinVals[yc], xc);
-  light(random(8), random(8), random(2, 10));
-}
-
-void flowLight(){
-  xc++;
-  if(xc > 7)
-    xc = 0;
-  bitSet(pinVals[yc], xc);
-}
-
-//Snake goes up while Button is pressed
-void buttonPressed(){
-  buttonStateUp = digitalRead(buttonPinUp);
-  buttonStateDown = digitalRead(buttonPinDown);
-  if (buttonStateUp == HIGH){
-    digitalWrite(zLayer, HIGH);
-    zLayer++;
-    if(zLayer > 9){
-    zLayer = 2;
-    }
-    light(xc, yc, zLayer);
-  }
-  else if (buttonStateDown == HIGH){
-    digitalWrite(zLayer, HIGH);
-    zLayer--;
-    if(zLayer < 2){
-      zLayer = 9;
-    }
-    light(xc, yc, zLayer);
-  } else{
-    light(xc, yc, zLayer);
-  }
-  
-}
 
 void loop(){
   digitalWrite(latchPin, LOW);
@@ -193,32 +170,23 @@ void loop(){
   }
   digitalWrite(latchPin, HIGH);
 
-  buttonPressed(); //Check if a button is pressed, if it is pressed Snake goes up or down
+  buttonPressed(led1->x, led1->y, led1->z); //Check if a button is pressed, if it is pressed Snake goes up or down
  
   //Increase for slower effect
   //randomLight();
   //delay(500);
  
   //Set the display bits
-  bitClear(pinVals[yc], xc);
+  bitClear(pinVals[led1->y], led1->x);
 
   //light(xc,yc,zLayer);
   //basic();
-  controlLight(analogRead(x_pin), analogRead(y_pin));
+  controlLight(analogRead(x_pin), analogRead(y_pin), led1->x, led1->y, led1->z);
 
   //flowLight();
   //delay(50);
   
-  bitSet(pinVals[yc], xc);
-
-  Serial.print("Switch: ");
-  Serial.print(digitalRead(sw_pin));
-  Serial.print("\n");
-  Serial.print("X-Axis: ");
-  Serial.print(analogRead(x_pin));
-  Serial.print("\n");
-  Serial.print("Y-Axis: ");
-  Serial.println(analogRead(y_pin));
-  Serial.print("\n\n");
+  bitSet(pinVals[led1->y], led1->x);
+  
   delay(100);
 }
