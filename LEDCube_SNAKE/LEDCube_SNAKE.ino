@@ -56,7 +56,7 @@ LED createLED(int x, int y, int z, LEDList list){
 
 void pushOnList(LED* led, LEDList* list){
   if(list->head == NULL && list->tail == NULL){
-    list->head = head;
+    list->head = led;
     list->head->next = list->tail;
   }else{
   }
@@ -197,8 +197,9 @@ void setup(){
 
   pinMode(buttonPinUp, INPUT); //Button Up
   pinMode(buttonPinDown, INPUT); // Button Down
+
   
-  *firstLight = createLED(0, 0, 0, *list);
+  *firstLight = createLED(4, 5, 3, *list);
   
   light(list->head->x, list->head->y, list->head->z, list);
 }
@@ -211,6 +212,8 @@ void loop(){
    shiftOut(dataPin, clockPin, MSBFIRST, pinVals[i]);
   }
   digitalWrite(latchPin, HIGH);
+
+  //bitClear(pinVals[list->head->y], list->head->x);
 
   buttonPressed(list); //Check if a button is pressed, if it is pressed Snake goes up or down
  
