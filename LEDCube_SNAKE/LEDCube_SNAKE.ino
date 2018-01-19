@@ -16,7 +16,7 @@ int buttonPinDown = A5;
 int buttonStateDown = 0;
  
 byte pinVals[8];
-int zLayer = 1;
+int zLayer = 2;
 int xc = 2;
 int yc = 7;
 
@@ -36,47 +36,6 @@ int head;
 int tail;
 int bodyLength;
 int direction;
-
-
-
-void setup(){
-    //layer pins
-  for(int i = 2; i < 10; i++)
-  {
-    pinMode(i, OUTPUT);
-    digitalWrite(i, LOW);
-  }
- 
-  pinMode(latchPin, OUTPUT);
-  pinMode(clockPin, OUTPUT);
-  pinMode(dataPin, OUTPUT);
-
-  pinMode(sw_pin, INPUT_PULLUP);
-  pinMode(x_pin, INPUT);
-  pinMode(y_pin, INPUT);
-  Serial.begin(9600);
- 
-  digitalWrite(latchPin,LOW);
-  digitalWrite(dataPin,LOW);
-  digitalWrite(clockPin,LOW);
- 
-  bitSet(pinVals[0], 0);
-  digitalWrite(2, HIGH);
-  digitalWrite(3, HIGH);
-  digitalWrite(4, HIGH);
-  digitalWrite(5, HIGH);
-  digitalWrite(6, HIGH);
-  digitalWrite(7, HIGH);
-  digitalWrite(8, HIGH);
-  digitalWrite(9, HIGH);
-  digitalWrite(10, HIGH);
-
-  pinMode(buttonPinUp, INPUT); //Button Up
-  pinMode(buttonPinDown, INPUT); // Button Down
-
-  light(xc,yc,zLayer);
-}
-
 
 void showLedNumbers(int number){
   switch(number){
@@ -116,7 +75,6 @@ void light (int x, int y, int z){
   yc = y;
   zLayer = z;
   digitalWrite(zLayer, LOW);
-  
 }
 
 void controlLight(int x_axe, int y_axe){
@@ -165,25 +123,58 @@ void flowLight(){
 void buttonPressed(){
   buttonStateUp = digitalRead(buttonPinUp);
   buttonStateDown = digitalRead(buttonPinDown);
-  if (buttonStateUp == HIGH){
-    digitalWrite(zLayer, HIGH);
+  digitalWrite(zLayer, HIGH);
+  if (buttonStateUp == HIGH){                   //Knopf Hoch, Blauer Knopf
     zLayer++;
     if(zLayer > 9){
     zLayer = 2;
     }
-    light(xc, yc, zLayer);
   }
-  else if (buttonStateDown == HIGH){
-    digitalWrite(zLayer, HIGH);
+  else if (buttonStateDown == HIGH){    //Knopf runter: Gelber Knopf
     zLayer--;
     if(zLayer < 2){
       zLayer = 9;
     }
-    light(xc, yc, zLayer);
-  } else{
-    light(xc, yc, zLayer);
+  } 
+  light(xc, yc, zLayer);
+}
+
+
+void setup(){
+    //layer pins
+  for(int i = 2; i < 10; i++)
+  {
+    pinMode(i, OUTPUT);
+    digitalWrite(i, LOW);
   }
-  
+ 
+  pinMode(latchPin, OUTPUT);
+  pinMode(clockPin, OUTPUT);
+  pinMode(dataPin, OUTPUT);
+
+  pinMode(sw_pin, INPUT_PULLUP);
+  pinMode(x_pin, INPUT);
+  pinMode(y_pin, INPUT);
+  Serial.begin(9600);
+ 
+  digitalWrite(latchPin,LOW);
+  digitalWrite(dataPin,LOW);
+  digitalWrite(clockPin,LOW);
+ 
+  bitSet(pinVals[0], 0);
+  digitalWrite(2, HIGH);
+  digitalWrite(3, HIGH);
+  digitalWrite(4, HIGH);
+  digitalWrite(5, HIGH);
+  digitalWrite(6, HIGH);
+  digitalWrite(7, HIGH);
+  digitalWrite(8, HIGH);
+  digitalWrite(9, HIGH);
+  digitalWrite(10, HIGH);
+
+  pinMode(buttonPinUp, INPUT); //Button Up
+  pinMode(buttonPinDown, INPUT); // Button Down
+
 }
 
 void loop(){
@@ -195,30 +186,16 @@ void loop(){
 
   buttonPressed(); //Check if a button is pressed, if it is pressed Snake goes up or down
  
-  //Increase for slower effect
-  //randomLight();
-  //delay(500);
  
   //Set the display bits
   bitClear(pinVals[yc], xc);
-
-  //light(xc,yc,zLayer);
-  //basic();
+  
   controlLight(analogRead(x_pin), analogRead(y_pin));
-
-  //flowLight();
-  //delay(50);
   
   bitSet(pinVals[yc], xc);
 
-  Serial.print("Switch: ");
-  Serial.print(digitalRead(sw_pin));
-  Serial.print("\n");
-  Serial.print("X-Axis: ");
-  Serial.print(analogRead(x_pin));
-  Serial.print("\n");
-  Serial.print("Y-Axis: ");
-  Serial.println(analogRead(y_pin));
-  Serial.print("\n\n");
   delay(100);
+
+  
+  
 }
