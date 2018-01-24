@@ -16,7 +16,6 @@ int zLayer = 2;
 int xc = 2;
 int yc = 7;
 
-
 int xc2 = 2;
 int yc2 = 6;
 
@@ -42,6 +41,8 @@ typedef struct Led{
 Led snake [100];
 
 int listCounter;
+
+Led apple;
 
 
 void light (int x, int y, int z){
@@ -96,10 +97,13 @@ void controlLight(int x_axe, int y_axe, Led list[], int counter){
 }
 
 // Lights a random LED, use this for the apple
-void randomLight(){
-  //digitalWrite(zLayer, HIGH);
-  //bitClear(pinVals[yc], xc);
-  light(random(8), random(8), random(2, 10));
+Led randomLight(){
+  int x = random(8);
+  int y = random(8);
+  int z = random(2, 9);
+  Led light = {x, y};
+  
+  return light;
 }
 
 void flowLight(){
@@ -132,19 +136,25 @@ void buttonPressed(){
   
 }
 
-void setBit(Led list[], int counter){
+void setBit(Led list[], int counter, Led apple){
   for(int i = 0; i < counter; i++){
     bitClear(pinVals[snake[i].y], snake[i].x);
   }
+  bitClear(pinVals[apple.y], apple.x);
   
   controlLight(analogRead(x_pin), analogRead(y_pin), snake, listCounter);
 
   for(int i = 0; i < counter; i++){
     bitSet(pinVals[snake[i].y], snake[i].x);
   }
+  bitSet(pinVals[apple.y], apple.x);
   
 }
 
+Led createLight(int x, int y){
+  Led newLed = {x, y};
+  return newLed;
+}
 
 void setup(){
     //layer pins
@@ -197,7 +207,17 @@ void setup(){
   snake[2] = led3;
   snake[3] = led4;
   snake[4] = led5;
-  
+
+  apple = randomLight();
+  if(snake[0].x == apple.x && snake[0].y == apple.y){
+    listCounter++;
+    if(snake[0].x == snake[1].x){
+      snake[listCounter] = createLight(snake[listCounter-1].x, snake[listCounter-1].y--);
+    }else if(snake[0].y == snake[1].y){
+      snake[listCounter] = createLight(snake[listCounter-1].x--, snake[listCounter-1].y);
+    }
+    apple = randomLight();
+  }
 
 }
 
@@ -210,13 +230,19 @@ void loop(){
 
   buttonPressed(); //Check if a button is pressed, if it is pressed Snake goes up or down
  
- 
   //Set the display bits
-  setBit(snake, listCounter);
- 
+  setBit(snake, listCounter, apple);
 
-  delay(100);
-
+  Serial.print("Switch:  ");
+  Serial.print(digitalRead(sw_pin));
+  Serial.print("\n");
+  Serial.print("X-axis: ");
+  Serial.print(analogRead(x_pin));
+  Serial.print("\n");
+  Serial.print("Y-axis: ");
+  Serial.println(analogRead(y_pin));
+  Serial.print("\n\n");
   
+  delay(100);
   
 }
