@@ -1,4 +1,3 @@
-
 //--- Pin connected to ST_CP of 74HC595
 int latchPin = 10;
 //--- Pin connected to SH_CP of 74HC595
@@ -13,93 +12,86 @@ int buttonPinDown = A5;
 int buttonStateDown = 0;
  
 byte pinVals[8];
-//int zLayer = 1;
-//int xc = 2;
-//int yc = 7;
+int zLayer = 2;
+int xc = 2;
+int yc = 7;
+
+
+int xc2 = 2;
+int yc2 = 6;
+
+int xc3 = 2;
+int yc3 = 5;
+
+int xc4 = 2;
+int yc4 = 4;
+
+int xc5 = 2;
+int yc5 = 3;
 
 
 const int sw_pin = 1;
 const int x_pin = 0;
 const int y_pin = 1;
 
-typedef struct LED{
-  int x, y, z;
-  LED* next;
-}LED;
+typedef struct Led{
+  int x;
+  int y;
+}Led;
 
-typedef struct LEDList{
-  LED* head;
-  LED* tail;
-  int length;
-}LEDList;
+Led snake [100];
 
-//Snake
-int lastInput;
-int head;
-int tail;
-int bodyLength;
-int direction;
+int listCounter;
 
-LED* firstLight;
-LEDList* list;
 
-LED createLED(int x, int y, int z, LEDList list){
-  LED* newLED;
-  newLED->x = x;
-  newLED->y = y;
-  newLED->z = z;  
-
-  pushOnList(newLED, &list);
-
-  return *newLED;
+void light (int x, int y, int z){
+  xc = x;
+  yc = y;
+  zLayer = z;
+  digitalWrite(zLayer, LOW);
 }
 
-void pushOnList(LED* led, LEDList* list){
-  if(list->head == NULL && list->tail == NULL){
-    list->head = led;
-    list->head->next = list->tail;
-  }else{
-  }
-  list->length += 1;
-}
-
-void light (int x, int y, int z, LEDList* list){
-  list->head->x = x;
-  list->head->y = y;
-  list->head->z = z;
-  digitalWrite(list->head->z, LOW);
-  
-}
-
-/*Enable to control LED light left, right, forward and backward*/
-void controlLight(int x_axe, int y_axe, LEDList* list){
-  int x = list->head->x;
-  int y = list->head->y;
-  int z = list->head->z;
+void controlLight(int x_axe, int y_axe, Led list[], int counter){
   if(y_axe < 10){
-    x--;
-    if(x < 0){
-      x = 7;
+    for(int i = 0; i < counter; i++){
+      snake[i].x--;
     }
-    light(x, y, z, list);
+    for(int i = 0; i < counter; i++){
+      if(snake[i].x < 0){
+        snake[i].x = 7;
+      } 
+    }
+    light(snake[0].x, snake[0].y, zLayer);
   }else if(y_axe > 1000){
-    x++;
-    if(x > 7){
-      x = 0;
+    for(int i = 0; i < counter; i++){
+      snake[i].x++;
     }
-    light(x, y, z, list);
+    for(int i = 0; i < counter; i++){
+      if(snake[i].x > 7){
+        snake[i].x = 0;
+      } 
+    }
+    light(snake[0].x, snake[0].y, zLayer);
   }else if(x_axe < 10){
-    y++;
-    if(y > 7){
-      y = 0;
+    for(int i = 0; i < counter; i++){
+      snake[i].y++;
     }
-    light(x, y, z, list);
+    for(int i = 0; i < counter; i++){
+      if(snake[i].y > 7){
+        snake[i].y = 0;
+      } 
+    }
+    light(snake[0].x, snake[0].y, zLayer);
   }else if(x_axe > 1000){
-    y--;
-    if(y < 0){
-      y = 7;
+    for(int i = 0; i < counter; i++){
+      snake[i].y--;
     }
-    light(x, y, z, list);
+    for(int i = 0; i < counter; i++){
+      if(snake[i].y < 0){
+        snake[i].y = 7;
+      } 
+    }
+    light(snake[0].x, snake[0].y, zLayer);
   }
 }
 
@@ -107,61 +99,52 @@ void controlLight(int x_axe, int y_axe, LEDList* list){
 void randomLight(){
   //digitalWrite(zLayer, HIGH);
   //bitClear(pinVals[yc], xc);
-  light(random(8), random(8), random(2, 10), list);
+  light(random(8), random(8), random(2, 10));
 }
 
-/*
 void flowLight(){
-  led1->x += 1;;
-  if(led1->x > 7)
-    led1->x = 0;
-  bitSet(pinVals[led1->y], led1->x);
-}*/
+  xc++;
+  if(xc > 7)
+    xc = 0;
+  bitSet(pinVals[yc], xc);
+}
 
 //Snake goes up while Button is pressed
-void buttonPressed(LEDList* list){
-  int x = list->head->x;
-  int y = list->head->y;
-  int z = list->head->z;
+void buttonPressed(){
   buttonStateUp = digitalRead(buttonPinUp);
   buttonStateDown = digitalRead(buttonPinDown);
-  if (buttonStateUp == HIGH){
-    digitalWrite(z, HIGH);
-    z++;
-    if(z > 9){
-    z = 2;
+  digitalWrite(zLayer, HIGH);
+  if (buttonStateUp == HIGH){                   //Knopf Hoch, Blauer Knopf
+    zLayer++;
+    if(zLayer > 9){
+    zLayer = 2;
     }
-    light(x, y, z, list);
   }
-  else if (buttonStateDown == HIGH){
-    digitalWrite(z, HIGH);
-    z--;
-    if(z < 2){
-      z = 9;
+  else if (buttonStateDown == HIGH){    //Knopf runter: Gelber Knopf
+    zLayer--;
+    if(zLayer < 2){
+      zLayer = 9;
     }
-    light(x, y, z, list);
-  } else{
-    light(x, y, z, list);
+  } 
+  for(int i = 0; i < listCounter; i++){
+    light(snake[i].x, snake[i].y , zLayer);
   }
   
 }
 
-LED createApple(){
-
-  LED* apple;
-  int x = random(8);
-  int y = random(8);
-  int z = random(2,10);
+void setBit(Led list[], int counter){
+  for(int i = 0; i < counter; i++){
+    bitClear(pinVals[snake[i].y], snake[i].x);
+  }
   
-  digitalWrite(apple->z, LOW);
-  bitSet(pinVals[apple->y], apple->x);
+  controlLight(analogRead(x_pin), analogRead(y_pin), snake, listCounter);
 
-  return *apple;
+  for(int i = 0; i < counter; i++){
+    bitSet(pinVals[snake[i].y], snake[i].x);
+  }
+  
 }
 
-void eatApple();
-
-void StopGame();
 
 void setup(){
     //layer pins
@@ -198,13 +181,25 @@ void setup(){
   pinMode(buttonPinUp, INPUT); //Button Up
   pinMode(buttonPinDown, INPUT); // Button Down
 
+  Led led1 = {xc, yc};
+  listCounter++;
+  Led led2 = {xc2, yc2};
+  listCounter++;
+  Led led3 = {xc3, yc3};
+  listCounter++;
+  Led led4 = {xc4, yc4};
+  listCounter++;
+  Led led5 = {xc5, yc5};
+  listCounter++;
+
+  snake[0] = led1;
+  snake[1] = led2;
+  snake[2] = led3;
+  snake[3] = led4;
+  snake[4] = led5;
   
-  *firstLight = createLED(4, 5, 3, *list);
-  
-  light(list->head->x, list->head->y, list->head->z, list);
+
 }
-
-
 
 void loop(){
   digitalWrite(latchPin, LOW);
@@ -213,25 +208,15 @@ void loop(){
   }
   digitalWrite(latchPin, HIGH);
 
-  //bitClear(pinVals[list->head->y], list->head->x);
-
-  buttonPressed(list); //Check if a button is pressed, if it is pressed Snake goes up or down
+  buttonPressed(); //Check if a button is pressed, if it is pressed Snake goes up or down
  
-  //Increase for slower effect
-  //randomLight();
-  //delay(500);
  
   //Set the display bits
-  bitClear(pinVals[list->head->y], list->head->x);
+  setBit(snake, listCounter);
+ 
 
-  //light(xc,yc,zLayer);
-  //basic();
-  controlLight(analogRead(x_pin), analogRead(y_pin), list);
-
-  //flowLight();
-  //delay(50);
-  
-  bitSet(pinVals[list->head->y], list->head->x);
-  
   delay(100);
+
+  
+  
 }
