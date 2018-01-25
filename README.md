@@ -1,6 +1,6 @@
-# 3DSnake_CUBE
+# 3DSnake CUBE
 
-Im Rahmen eines Projekts in der Vorlesung Computer Architecture and Operating Systems bauen wir einen 8x8x8 LED Cube mit programmieren darauf mit dem Arduino einen 3D Snake Spiel. Mit Hilfe eines Joysticks soll die Schlange steuerbar sein. Der Cube ist mit 512 Led's aufgebaut. Mit 8 Schiftregistern sollen die Pins beim Arduino erweitert werden.  
+Im Rahmen eines Projekts in der Vorlesung Computer Architecture and Operating Systems an der Universität Basel bauen wir einen 8x8x8 LED Cube und programmieren darauf mit dem Arduino einen 3D Snake Spiel. Mit Hilfe eines Joysticks und zwei Buttons kann man die Schlange bewegen. Der Cube ist mit 512 blauen LED Lichtern aufgebaut.   
 
 
 Adalssteinn Jonsson
