@@ -37,7 +37,7 @@ const int y_pin = 1;
 typedef struct Led{
   int x;
   int y;
-  boolean UP, DOWN, UPRIGHT, RIGHTUP, DOWNRIGHT, RIGHTDOWN, UPLEFT, LEFTUP, DOWNLEFT, LEFTDOWN;
+  boolean UP, DOWN, LEFT, RIGHT, UPRIGHT, RIGHTUP, DOWNRIGHT, RIGHTDOWN, UPLEFT, LEFTUP, DOWNLEFT, LEFTDOWN;
 }Led;
 
 Led snake [100];
@@ -54,8 +54,9 @@ void light (int x, int y, int z){
   digitalWrite(zLayer, LOW);
 }
 
+/*
 void moveLight(int x_axe, int y_axe, Led list[], int counter){
-  if(y_axe > 10){  //Down
+  if(y_axe > 1000){  //Down
     int j1 = 0;
     
     if(snake[j1].y > snake[j1+1].y){
@@ -274,6 +275,274 @@ void moveLight(int x_axe, int y_axe, Led list[], int counter){
     light(snake[0].x, snake[0].y, zLayer);
   }
 }
+*/
+
+/*
+ * By changing the movement, the whole of the snake should follow the direction. Each led light should
+ * be checked in which direction they have to move on. For each led should the direction, in where it moved, be saved as boolean.
+ * So every led have just to check, which way his precursor covered before and follow that way. 
+ */
+void moveSnakeBody(LED snake[], int counter){
+  int head = 0;
+
+  for(int i = head; i < counter-2; i++){
+      if(snake[i].UP == true){
+        snake[i+1].x--;
+        snake[i].UP = false;
+        if(snake[i+1].y > snake[i+2].y){
+          snake[i+1].RIGHTUP = true;
+        }else if(snake[i+1].y < snake[i+2].y){
+          snake[i+1].LEFTUP = true;
+        }else if(snake[i+1].y == snake[i+2].y){
+          snake[i+1].UP = true;
+        }
+      }else if(snake[i].DOWN == true){
+        snake[i+1].x++;
+        snake[i].DOWN = false;
+        if(snake[i+1].y > snake[i+2].y){
+          snake[i+1].LEFTDOWN = true;
+        }else if(snake[i+1].y < snake[i+2].y){
+          snake[i+1].RIGHTDOWN = true;
+        }else if(snake[i+1].y == snake[i+2].y){
+          snake[i+1].DOWN = true;
+        }
+      }else if(snake[i].LEFT == true){
+        snake[i+1].y--;
+        snake[i].LEFT = false;
+        if(snake[i+1].x > snake[i+2].x){
+          snake[i+1].UPLEFT = true;
+        }else if(snake[i+1].y < snake[i+2].y){
+          snake[i+1].DOWNLEFT = true;
+        }else if(snake[i+1].y == snake[i+2].y){
+          snake[i+1].LEFT = true;
+        }
+      }else if(snake[i].RIGHT == true){
+        snake[i+1].y++;
+        snake[i].RIGHT = false;
+        if(snake[i+1].x > snake[i+2].x){
+          snake[i+1].UPRIGHT = true;
+        }else if(snake[i+1].y < snake[i+2].y){
+          snake[i+1].DOWNRIGHT = true;
+        }else if(snake[i+1].y == snake[i+2].y){
+          snake[i+1].RIGHT = true;
+        }
+      }else if(snake[i].UPRIGHT == true){
+        snake[i+1].x--;
+        snake[i].UPRIGHT = false;
+        if(snake[i+1].y > snake[i+2].y){
+          snake[i+1].RIGHTUP = true;
+        }else if(snake[i+1].y < snake[i+2].y){
+          snake[i+1].LEFTUP = true;
+        }else if(snake[i+1].y == snake[i+2].y){
+          snake[i+1].UP = true;
+        }
+      }else if(snake[i].RIGHTUP == true){
+        snake[i+1].x--;
+        snake[i].RIGHTUP = false;
+        if(snake[i+1].y > snake[i+2].y){
+          snake[i+1].RIGHTUP = true;
+        }else if(snake[i+1].y < snake[i+2].y){
+          snake[i+1].LEFTUP = true;
+        }else if(snake[i+1].y == snake[i+2].y){
+          snake[i+1].UP = true;
+        }  
+      }else if(snake[i].DOWNRIGHT == true){
+        snake[i+1].x++;
+        snake[i].DOWNRIGHT = false;
+        if(snake[i+1].y > snake[i+2].y){
+          snake[i+1].RIGHTDOWN = true;
+        }else if(snake[i+1].y < snake[i+2].y){
+          snake[i+1].LEFTDOWN = true;
+        }else if(snake[i+1].y == snake[i+2].y){
+          snake[i+1].DOWN = true;
+        }
+      }else if(snake[i].RIGHTDOWN == true){
+        snake[i+1].y--;
+        snake[i].RIGHTDOWN = false;
+        if(snake[i+1].x > snake[i+2].x){
+          snake[i+1].DOWNRIGHT = true;
+        }else if(snake[i+1].x < snake[i+2].x){
+          snake[i+1].UPRIGHT = true;
+        }else if(snake[i+1].x == snake[i+2].x){
+          snake[i+1].RIGHT = true;
+        }
+      }else if(snake[i].UPLEFT == true){
+        snake[i+1].x--;
+        snake[i].UPLEFT = false;
+        if(snake[i+1].y > snake[i+2].y){
+          snake[i+1].RIGHTUP = true;
+        }else if(snake[i+1].y < snake[i+2].y){
+          snake[i+1].LEFTUP = true;
+        }else if(snake[i+1].y == snake[i+2].y){
+          snake[i+1].UP = true;
+        }  
+      }else if(snake[i].LEFTUP == true){
+        snake[i+1].x--;
+        snake[i].LEFTUP = false;
+        if(snake[i+1].y > snake[i+2].y){
+          snake[i+1].RIGHTUP = true;
+        }else if(snake[i+1].y < snake[i+2].y){
+          snake[i+1].LEFTUP = true;
+        }else if(snake[i+1].y == snake[i+2].y){
+          snake[i+1].UP = true;
+        }
+      }else if(snake[i].DOWNLEFT == true){
+        snake[i+1].x++;
+        snake[i].DOWNLEFT = false;
+        if(snake[i+1].y > snake[i+2].y){
+          snake[i+1].RIGHTDOWN = true;
+        }else if(snake[i+1].y < snake[i+2].y){
+          snake[i+1].LEFTDOWN = true;
+        }else if(snake[i+1].y == snake[i+2].y){
+          snake[i+1].DOWN = true;
+        }
+      }else if(snake[i].LEFTDOWN == true){
+        snake[i+1].y--;
+        snake[i].LEFTDOWN = false;
+        if(snake[i+1].x > snake[i+2].x){
+          snake[i+1].DOWNRIGHT = true;
+        }else if(snake[i+1].x < snake[i+2].x){
+          snake[i+1].UPRIGHT = true;
+        }else if(snake[i+1].x == snake[i+2].x){
+          snake[i+1].RIGHT = true;
+        }
+      }
+    }
+
+//The followeing if-else statement is important to move the last led of the list because the loop before goes until the second
+//last of the list.
+
+    if(snake[counter-2].UP == true){
+      snake[counter-1].x--;
+      snake[counter-2].UP = false;
+    }else if(snake[counter-2].DOWN == true){
+      snake[counter-1].x++;
+      snake[counter-2].DOWN = false;
+    }else if(snake[counter-2].LEFT == true){
+      snake[counter-1].y--;
+      snake[counter-2].LEFT = false;
+    }else if(snake[counter-2].RIGHT == true){
+      snake[counter-1].y++;
+      snake[counter-2].RIGHT = false;
+    }else if(snake[counter-2].UPRIGHT == true){
+      snake[counter-1].x--;
+      snake[counter-2].UPRIGHT = false;
+    }else if(snake[counter-2].RIGHTUP == true){
+      snake[counter-1].y--;
+      snake[counter-2].RIGHTUP = false;
+    }else if(snake[counter-2].DOWNRIGHT == true){
+      snake[counter-1].x++;
+      snake[counter-2].DOWNRIGHT = false;
+    }else if(snake[counter-2].RIGHTDOWN == true){
+      snake[counter-1].y--;
+      snake[counter-2].RIGHTDOWN = false;
+    }else if(snake[counter-2].UPLEFT == true){
+      snake[counter-1].x--;
+      snake[counter-2].UPLEFT= false;
+    }else if(snake[counter-2].LEFTUP == true){
+      snake[counter-1].y--;
+      snake[counter-2].LEFTUP = false;
+    }else if(snake[counter-2].DOWNLEFT == true){
+      snake[counter-1].x++;
+      snake[counter-2].DOWNLEFT = false;
+    }else if(snake[counter-2].LEFTDOWN == true){
+      snake[counter-1].y++;
+      snake[counter-2].LEFTDOWN = false;
+    }
+}
+
+/*
+ * Changes direction by moving the joystick. 
+ */
+void changeDirection(int x_axe, int y_axe, Led list[], int counter){
+  if(y_axe > 1000){  //Down
+    int head = 0;
+    
+    if(list[head].y > list[head+1].y){
+      list[head].x++;
+      list[head].LEFTDOWN = true;
+    }else if(list[head].y < list[head+1].y){
+      list[head].x++;
+      list[head].RIGHTDOWN = true;
+    }else if(list[head].y == list[head+1].y){
+      list[head].x++;
+    }
+    
+    moveSnakeBody(list, counter);
+
+   //If the snake move toward a side of the cube, it will come out from the other side. 
+    for(int i = 0; i < counter; i++){
+      if(list[i].x < 0){
+        list[i].x = 7;
+      } 
+    }
+    light(list[head].x, list[head].y, zLayer);
+    
+  }else if(y_axe < 10){ //UP
+    
+    if(list[head].y > list[head+1].y){
+      list[head].x--;
+      list[head].LEFTUP = true;
+    }else if(list[head].y < list[head+1].y){
+      list[head].x--;
+      list[head].RIGHTUP = true;
+    }else if(list[head].y == list[head+1].y){
+      list[head].x--;
+    }
+    
+    moveSnakeBody(list, counter);
+    
+    for(int i = 0; i < counter; i++){
+      if(list[i].x > 7){
+        list[i].x = 0;
+      } 
+    }
+    light(list[head].x, list[head].y, zLayer);
+    
+  }else if(x_axe < 10){//LEFT
+  
+    if(list[head].x > list[head+1].x){
+      list[head].y++;
+      list[head].DOWNLEFT = true;
+    }else if(list[head].x < list[head+1].x){
+      list[head].y++;
+      list[head].UPLEFT = true;
+    }else if(list[head].x == list[head+1].x){
+      list[j3].y++;
+    }
+    
+    moveSnakeBody(list, counter);
+    
+    for(int i = 0; i < counter-1; i++){
+      if(list[i].y > 7){
+        list[i].y = 0;
+      } 
+    }
+    light(list[head].x, list[head].y, zLayer);
+    
+  }else if(x_axe > 1000){ //RIGHT
+    
+    if(list[head].x > list[head+1].x){
+      list[head].y--;
+      list[head].DOWNRIGHT = true;
+    }else if(list[head].x < list[head+1].x){
+      list[head].y--;
+      list[head].UPRIGHT = true;
+    }else if(list[head].x == list[head+1].x){
+      list[head].y--;
+    }
+
+    
+    moveSnakeBody(list, counter);
+    
+    for(int i = 0; i < counter; i++){
+      if(list[i].y < 0){
+        list[i].y = 7;
+      } 
+    }
+    light(list[head].x, list[head].y, zLayer);
+  }
+}
 
 // Lights a random LED, use this for the apple
 Led randomLight(){
@@ -321,7 +590,7 @@ void setBit(Led list[], int counter, Led apple){
   }
   bitClear(pinVals[apple.y], apple.x);
   
-  moveLight(analogRead(x_pin), analogRead(y_pin), snake, listCounter);
+  changeDirection(analogRead(x_pin), analogRead(y_pin), snake, listCounter);
 
   for(int i = 0; i < counter; i++){
     bitSet(pinVals[snake[i].y], snake[i].x);
@@ -331,7 +600,7 @@ void setBit(Led list[], int counter, Led apple){
 }
 
 Led createLight(int x, int y){
-  Led newLed = {x, y};
+  Led newLed = {x, y, false, false, false, false, false, false, false, false, false, false };
   return newLed;
 }
 
@@ -370,15 +639,15 @@ void setup(){
   pinMode(buttonPinUp, INPUT); //Button Up
   pinMode(buttonPinDown, INPUT); // Button Down
 
-  Led led1 = {xc, yc, false, false, false, false, false, false, false, false};
+  Led led1 = {xc, yc, false, false, false, false, false, false, false, false, false, false};
   listCounter++;
-  Led led2 = {xc2, yc2, false, false, false, false, false, false, false, false};
+  Led led2 = {xc2, yc2, false, false, false, false, false, false, false, false, false, false};
   listCounter++;
-  Led led3 = {xc3, yc3, false, false, false, false, false, false, false, false};
+  Led led3 = {xc3, yc3, false, false, false, false, false, false, false, false, false, false};
   listCounter++;
-  Led led4 = {xc4, yc4, false, false, false, false, false, false, false, false};
+  Led led4 = {xc4, yc4, false, false, false, false, false, false, false, false, false, false};
   listCounter++;
-  Led led5 = {xc5, yc5, false, false, false, false, false, false, false, false};
+  Led led5 = {xc5, yc5, false, false, false, false, false, false, false, false, false, false};
   listCounter++;
 
   snake[0] = led1;
@@ -412,6 +681,7 @@ void loop(){
   //Set the display bits
   setBit(snake, listCounter, apple);
 
+/*
   Serial.print("Switch:  ");
   Serial.print(digitalRead(sw_pin));
   Serial.print("\n");
@@ -421,6 +691,7 @@ void loop(){
   Serial.print("Y-axis: ");
   Serial.println(analogRead(y_pin));
   Serial.print("\n\n");
+  */
   
   delay(100);
   
