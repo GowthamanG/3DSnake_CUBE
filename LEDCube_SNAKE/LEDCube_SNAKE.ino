@@ -54,9 +54,18 @@ void light (int x, int y, int z){
 
 void controlLight(int x_axe, int y_axe, Led list[], int counter){
   if(y_axe < 10){
-    for(int i = 0; i < counter; i++){
-      snake[i].x--;
-    }
+    int j1 = 0;
+    snake[j1].x--;
+    for(int i = j1; i < counter-1; i++){
+      if(snake[i].y == snake[i+1].y){
+        snake[i+1].x--;
+      }else if (snake[i].y > snake[i+1].y){
+        snake[i+1].y++;
+      }else if(snake[i].y < snake[i+1].y){
+        snake[i+1].y--;
+      }
+   }
+   
     for(int i = 0; i < counter; i++){
       if(snake[i].x < 0){
         snake[i].x = 7;
@@ -64,8 +73,17 @@ void controlLight(int x_axe, int y_axe, Led list[], int counter){
     }
     light(snake[0].x, snake[0].y, zLayer);
   }else if(y_axe > 1000){
-    for(int i = 0; i < counter; i++){
-      snake[i].x++;
+    int j2 = 0;
+    snake[j2].x++;
+    for(int i = j2; i < counter; i++){
+      if(snake[i].y == snake[i+1].y){
+        snake[i+1].x++;
+      }else if (snake[i].y > snake[i+1].y){
+        snake[i+1].y++;
+      }else if(snake[i].y < snake[i+1].y){
+        snake[i+1].y--;
+      }
+      
     }
     for(int i = 0; i < counter; i++){
       if(snake[i].x > 7){
@@ -74,18 +92,34 @@ void controlLight(int x_axe, int y_axe, Led list[], int counter){
     }
     light(snake[0].x, snake[0].y, zLayer);
   }else if(x_axe < 10){
-    for(int i = 0; i < counter; i++){
-      snake[i].y++;
+    int j3 = 0;
+    snake[j3].y++;
+    for(int i = j3; i < counter-1; i++){
+      if(snake[i].x == snake[i+1].x){
+        snake[i+1].y++;
+      }else if(snake[i].x > snake[i+1].x){
+        snake[i+1].x++;
+      }else if(snake[i].x < snake[i+1].x){
+        snake[i+1].x--;
+      }
     }
-    for(int i = 0; i < counter; i++){
+    for(int i = 0; i < counter-1; i++){
       if(snake[i].y > 7){
         snake[i].y = 0;
       } 
     }
     light(snake[0].x, snake[0].y, zLayer);
   }else if(x_axe > 1000){
-    for(int i = 0; i < counter; i++){
-      snake[i].y--;
+    int j4 = 0;
+    snake[j4].y--;
+    for(int i = j4; i < counter-1; i++){
+      if(snake[i].x == snake[i+1].x){
+        snake[i+1].y--;
+      }else if(snake[i].x > snake[i+1].x){
+        snake[i+1].x++;
+      }else if(snake[i].x < snake[i+1].x){
+        snake[i+1].x--;
+      }
     }
     for(int i = 0; i < counter; i++){
       if(snake[i].y < 0){
