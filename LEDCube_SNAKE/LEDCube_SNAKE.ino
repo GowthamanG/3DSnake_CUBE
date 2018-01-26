@@ -282,7 +282,7 @@ void moveLight(int x_axe, int y_axe, Led list[], int counter){
  * be checked in which direction they have to move on. For each led should the direction, in where it moved, be saved as boolean.
  * So every led have just to check, which way his precursor covered before and follow that way. 
  */
-void moveSnakeBody(LED snake[], int counter){
+void moveSnakeBody(Led snake[], int counter){
   int head = 0;
 
   for(int i = head; i < counter-2; i++){
@@ -455,8 +455,9 @@ void moveSnakeBody(LED snake[], int counter){
  * Changes direction by moving the joystick. 
  */
 void changeDirection(int x_axe, int y_axe, Led list[], int counter){
+  int head = 0;
+  
   if(y_axe > 1000){  //Down
-    int head = 0;
     
     if(list[head].y > list[head+1].y){
       list[head].x++;
@@ -508,7 +509,7 @@ void changeDirection(int x_axe, int y_axe, Led list[], int counter){
       list[head].y++;
       list[head].UPLEFT = true;
     }else if(list[head].x == list[head+1].x){
-      list[j3].y++;
+      list[head].y++;
     }
     
     moveSnakeBody(list, counter);
