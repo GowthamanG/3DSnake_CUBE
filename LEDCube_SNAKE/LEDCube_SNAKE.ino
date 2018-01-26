@@ -19,7 +19,7 @@ int yc = 7;
 int xc2 = 2;
 int yc2 = 6;
 
-int xc3 = 2;
+/*int xc3 = 2;
 int yc3 = 5;
 
 int xc4 = 2;
@@ -27,6 +27,9 @@ int yc4 = 4;
 
 int xc5 = 2;
 int yc5 = 3;
+
+int xc6 = 2;
+int yc6 = 2;*/
 
 
 const int sw_pin = 1;
@@ -42,7 +45,7 @@ typedef struct Led{
   //boolean UP, DOWN, LEFT, RIGHT, UPRIGHT, RIGHTUP, DOWNRIGHT, RIGHTDOWN, UPLEFT, LEFTUP, DOWNLEFT, LEFTDOWN;
 }Led;
 
-Led snake [100];
+Led snake [50];
 
 int listCounter;
 
@@ -428,29 +431,25 @@ void setup(){
   listCounter++;
   Led led2 = {xc2, yc2};
   listCounter++;
-  Led led3 = {xc3, yc3};
+  /*Led led3 = {xc3, yc3};
   listCounter++;
   Led led4 = {xc4, yc4};
   listCounter++;
   Led led5 = {xc5, yc5};
   listCounter++;
+  Led led6 = {xc6, yc6};
+  listCounter++;*/
 
   snake[0] = led1;
   snake[1] = led2;
-  snake[2] = led3;
+  /*snake[2] = led3;
   snake[3] = led4;
   snake[4] = led5;
+  snake[5] = led6;*/
 
-  /*apple = randomLight();
-  if(snake[0].x == apple.x && snake[0].y == apple.y){
-    listCounter++;
-    if(snake[0].x == snake[1].x){
-      snake[listCounter] = createLight(snake[listCounter-1].x, snake[listCounter-1].y--);
-    }else if(snake[0].y == snake[1].y){
-      snake[listCounter] = createLight(snake[listCounter-1].x--, snake[listCounter-1].y);
-    }
-    apple = randomLight();
-  }*/
+  apple = randomLight();
+  
+  
 
 }
 
@@ -462,7 +461,24 @@ void loop(){
   digitalWrite(latchPin, HIGH);
 
   buttonPressed(); //Check if a button is pressed, if it is pressed Snake goes up or down
- 
+
+ if(snake[0].x == apple.x && snake[0].y == apple.y){
+    if(snake[listCounter-1].x < snake[listCounter-2].x){
+      listCounter++;
+      snake[listCounter-1] = createLight(snake[listCounter-2].x--, snake[listCounter-2].y);
+    }else if(snake[listCounter-1].x > snake[listCounter-2].x){
+      listCounter++;
+      snake[listCounter-1] = createLight(snake[listCounter-2].x++, snake[listCounter-2].y);
+    }else if(snake[listCounter-1].y > snake[listCounter-2].y){
+      listCounter++;
+      snake[listCounter-1] = createLight(snake[listCounter-2].x, snake[listCounter-2].y--);
+    }else if(snake[listCounter-1].y < snake[listCounter-2].y){
+      listCounter++;
+      snake[listCounter-1] = createLight(snake[listCounter-2].x, snake[listCounter-2].y++);;
+    }
+    apple = randomLight();
+  }
+  
   //Set the display bits
   setBit(snake, listCounter, apple);
 
@@ -477,6 +493,9 @@ void loop(){
   Serial.println(analogRead(y_pin));
   Serial.print("\n\n");
   */
+
+  
+  
   
   delay(100);
   
