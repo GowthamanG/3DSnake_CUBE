@@ -19,10 +19,10 @@ int yc = 7;
 int xc2 = 2;
 int yc2 = 6;
 
-/*int xc3 = 2;
+int xc3 = 2;
 int yc3 = 5;
 
-int xc4 = 2;
+/*int xc4 = 2;
 int yc4 = 4;
 
 int xc5 = 2;
@@ -37,12 +37,12 @@ const int x_pin = 0;
 const int y_pin = 1;
 
 boolean UP, DOWN, LEFT, RIGHT, UPRIGHT, RIGHTUP, DOWNRIGHT, RIGHTDOWN, UPLEFT, LEFTUP, DOWNLEFT, LEFTDOWN;
+boolean dirUP, dirDOWN, dirLEFT, dirRIGHT;
 
 //defining led lights,each with x and y coordinate
 typedef struct Led{
   int x;
   int y;
-  //boolean UP, DOWN, LEFT, RIGHT, UPRIGHT, RIGHTUP, DOWNRIGHT, RIGHTDOWN, UPLEFT, LEFTUP, DOWNLEFT, LEFTDOWN;
 }Led;
 
 Led snake [50];
@@ -57,6 +57,47 @@ void light (int x, int y, int z){
   yc = y;
   zLayer = z;
   digitalWrite(zLayer, LOW);
+}
+
+Led createLight(int x, int y){
+  Led newLed = {x, y};
+  return newLed;
+}
+
+Led randomLight(){
+  int x = random(8);
+  int y = random(8);
+  int z = random(2, 9);
+  Led light = {x, y};
+  
+  return light;
+}
+
+
+
+void eatApple(Led snake [], int listCounter, Led apple){
+  if(snake[0].x == apple.x && snake[0].y == apple.y){
+    bitClear(pinVals[apple.y], apple.x);
+    if(snake[listCounter-1].x < snake[listCounter-2].x){
+      Led newLED = createLight(snake[listCounter-1].x--, snake[listCounter-1].y);
+      listCounter++;
+      snake[listCounter-1] = newLED;
+    }else if(snake[listCounter-1].x > snake[listCounter-2].x){
+      Led newLED = createLight(snake[listCounter-1].x++, snake[listCounter-1].y);
+      listCounter++;
+      snake[listCounter-1] = newLED;
+    }else if(snake[listCounter-1].y > snake[listCounter-2].y){
+      Led newLED = createLight(snake[listCounter-1].x, snake[listCounter-1].y--);
+      listCounter++;
+      snake[listCounter-1] = newLED;
+    }else if(snake[listCounter-1].y < snake[listCounter-2].y){
+      Led newLED = createLight(snake[listCounter-1].x, snake[listCounter-1].y++);
+      listCounter++;
+      snake[listCounter-1] = newLED;
+    }
+    apple = randomLight();
+    bitSet(pinVals[apple.y], apple.x);
+  }
 }
 
 
@@ -234,13 +275,115 @@ void moveSnakeBody(Led snake[], int counter){
     }
 }
 
+void onTheMove(Led list[], int counter, boolean dirUP, boolean dirDOWN, boolean dirLEFT, boolean dirRIGHT){
+  int head = 0;
+
+  if(dirDOWN == true){
+    if(list[head].y > list[head+1].y){
+      list[head].x++;
+      LEFTDOWN = true;
+    }else if(list[head].y < list[head+1].y){
+      list[head].x++;
+      RIGHTDOWN = true;
+    }else if(list[head].y == list[head+1].y){
+      list[head].x++;
+      DOWN = true;
+    }
+    
+    moveSnakeBody(list, counter);
+    for(int i = 0; i < counter; i++){
+      if(list[i].x > 7){
+        list[i].x = 0;
+      } 
+    }
+    light(list[head].x, list[head].y, zLayer);
+    
+    
+  }else if(dirUP == true){
+    if(list[head].y > list[head+1].y){
+      list[head].x--;
+      LEFTUP = true;
+    }else if(list[head].y < list[head+1].y){
+      list[head].x--;
+      RIGHTUP = true;
+    }else if(list[head].y == list[head+1].y){
+      list[head].x--;
+      UP = true;
+    }
+    
+    moveSnakeBody(list, counter);
+    for(int i = 0; i < counter; i++){
+      if(list[i].x < 0){
+        list[i].x = 7;
+      } 
+    }
+    light(list[head].x, list[head].y, zLayer);
+    
+    
+  }else if(dirLEFT == true){
+    if(list[head].x > list[head+1].x){
+      list[head].y++;
+      DOWNLEFT = true;
+    }else if(list[head].x < list[head+1].x){
+      list[head].y++;
+      UPLEFT = true;
+    }else if(list[head].x == list[head+1].x){
+      list[head].y++;
+      LEFT = true;
+    }
+    
+    moveSnakeBody(list, counter);
+    for(int i = 0; i < counter; i++){
+      if(list[i].y > 7){
+        list[i].y = 0;
+      } 
+    }
+    light(list[head].x, list[head].y, zLayer);
+    
+  }else if(dirRIGHT == true){
+    if(list[head].x > list[head+1].x){
+      list[head].y--;
+      DOWNRIGHT = true;
+    }else if(list[head].x < list[head+1].x){
+      list[head].y--;
+      UPRIGHT = true;
+    }else if(list[head].x == list[head+1].x){
+      list[head].y--;
+      RIGHT = true;
+    }
+    
+    moveSnakeBody(list, counter);
+    
+    for(int i = 0; i < counter; i++){
+      if(list[i].y < 0){
+        list[i].y = 7;
+      } 
+    }
+    light(list[head].x, list[head].y, zLayer);
+  }
+
+  for(int i = 0; i < counter; i++){
+    bitClear(pinVals[snake[i].y], snake[i].x);
+  }
+  
+  for(int i = 0; i < counter; i++){
+    bitSet(pinVals[snake[i].y], snake[i].x);
+  }
+  
+}
+
 /*
  * Changes direction by moving the joystick. 
  */
-void changeDirection(int x_axe, int y_axe, Led list[], int counter){
+void changeDirection(int x_axe, int y_axe, Led list[], int counter, Led apple, boolean dirUP, boolean dirDOWN, boolean dirLEFT, boolean dirRIGHT){
   int head = 0;
   
   if(y_axe > 1000){  //Down
+
+    dirDOWN = true;
+    dirUP = false;
+    dirLEFT = false;
+    dirRIGHT = false;
     
     if(list[head].y > list[head+1].y){
       list[head].x++;
@@ -255,6 +398,8 @@ void changeDirection(int x_axe, int y_axe, Led list[], int counter){
     
     moveSnakeBody(list, counter);
 
+    //eatApple(snake, counter, apple);
+
    //If the snake move toward a side of the cube, it will come out from the other side. 
     for(int i = 0; i < counter; i++){
       if(list[i].x > 7){
@@ -264,6 +409,11 @@ void changeDirection(int x_axe, int y_axe, Led list[], int counter){
     light(list[head].x, list[head].y, zLayer);
     
   }else if(y_axe < 10){ //UP
+
+    dirUP = true;
+    dirDOWN = false;
+    dirLEFT = false;
+    dirRIGHT = false;
     
     if(list[head].y > list[head+1].y){
       list[head].x--;
@@ -277,6 +427,8 @@ void changeDirection(int x_axe, int y_axe, Led list[], int counter){
     }
     
     moveSnakeBody(list, counter);
+
+    //eatApple(snake, counter, apple);
     
     for(int i = 0; i < counter; i++){
       if(list[i].x < 0){
@@ -286,6 +438,11 @@ void changeDirection(int x_axe, int y_axe, Led list[], int counter){
     light(list[head].x, list[head].y, zLayer);
     
   }else if(x_axe < 10){//LEFT
+
+    dirLEFT = true;
+    dirUP = false;
+    dirDOWN = false;
+    dirRIGHT = false;
   
     if(list[head].x > list[head+1].x){
       list[head].y++;
@@ -299,6 +456,8 @@ void changeDirection(int x_axe, int y_axe, Led list[], int counter){
     }
     
     moveSnakeBody(list, counter);
+
+    //eatApple(snake, counter, apple);
     
     for(int i = 0; i < counter; i++){
       if(list[i].y > 7){
@@ -308,6 +467,11 @@ void changeDirection(int x_axe, int y_axe, Led list[], int counter){
     light(list[head].x, list[head].y, zLayer);
     
   }else if(x_axe > 1000){ //RIGHT
+
+    dirRIGHT = true;
+    dirUP = false;
+    dirLEFT = false;
+    dirDOWN = false;
     
     if(list[head].x > list[head+1].x){
       list[head].y--;
@@ -322,6 +486,8 @@ void changeDirection(int x_axe, int y_axe, Led list[], int counter){
 
     
     moveSnakeBody(list, counter);
+
+    //eatApple(snake, counter, apple);
     
     for(int i = 0; i < counter; i++){
       if(list[i].y < 0){
@@ -333,21 +499,7 @@ void changeDirection(int x_axe, int y_axe, Led list[], int counter){
 }
 
 // Lights a random LED, use this for the apple
-Led randomLight(){
-  int x = random(8);
-  int y = random(8);
-  int z = random(2, 9);
-  Led light = {x, y};
-  
-  return light;
-}
 
-void flowLight(){
-  xc++;
-  if(xc > 7)
-    xc = 0;
-  bitSet(pinVals[yc], xc);
-}
 
 //Snake goes up while Button is pressed
 void buttonPressed(){
@@ -372,25 +524,7 @@ void buttonPressed(){
   
 }
 
-void setBit(Led list[], int counter, Led apple){
-  for(int i = 0; i < counter; i++){
-    bitClear(pinVals[snake[i].y], snake[i].x);
-  }
-  bitClear(pinVals[apple.y], apple.x);
-  
-  changeDirection(analogRead(x_pin), analogRead(y_pin), snake, listCounter);
 
-  for(int i = 0; i < counter; i++){
-    bitSet(pinVals[snake[i].y], snake[i].x);
-  }
-  bitSet(pinVals[apple.y], apple.x);
-  
-}
-
-Led createLight(int x, int y){
-  Led newLed = {x, y};
-  return newLed;
-}
 
 void setup(){
     //layer pins
@@ -431,9 +565,9 @@ void setup(){
   listCounter++;
   Led led2 = {xc2, yc2};
   listCounter++;
-  /*Led led3 = {xc3, yc3};
+  Led led3 = {xc3, yc3};
   listCounter++;
-  Led led4 = {xc4, yc4};
+  /*Led led4 = {xc4, yc4};
   listCounter++;
   Led led5 = {xc5, yc5};
   listCounter++;
@@ -442,16 +576,22 @@ void setup(){
 
   snake[0] = led1;
   snake[1] = led2;
-  /*snake[2] = led3;
-  snake[3] = led4;
+  snake[2] = led3;
+  /*snake[3] = led4;
   snake[4] = led5;
   snake[5] = led6;*/
 
-  apple = randomLight();
+  //apple = randomLight();
+
+  dirUP = false; 
+  dirDOWN = false; 
+  dirLEFT = true; 
+  dirRIGHT = false;
   
   
 
 }
+
 
 void loop(){
   digitalWrite(latchPin, LOW);
@@ -462,41 +602,16 @@ void loop(){
 
   buttonPressed(); //Check if a button is pressed, if it is pressed Snake goes up or down
 
- if(snake[0].x == apple.x && snake[0].y == apple.y){
-    if(snake[listCounter-1].x < snake[listCounter-2].x){
-      listCounter++;
-      snake[listCounter-1] = createLight(snake[listCounter-2].x--, snake[listCounter-2].y);
-    }else if(snake[listCounter-1].x > snake[listCounter-2].x){
-      listCounter++;
-      snake[listCounter-1] = createLight(snake[listCounter-2].x++, snake[listCounter-2].y);
-    }else if(snake[listCounter-1].y > snake[listCounter-2].y){
-      listCounter++;
-      snake[listCounter-1] = createLight(snake[listCounter-2].x, snake[listCounter-2].y--);
-    }else if(snake[listCounter-1].y < snake[listCounter-2].y){
-      listCounter++;
-      snake[listCounter-1] = createLight(snake[listCounter-2].x, snake[listCounter-2].y++);;
-    }
-    apple = randomLight();
+  for(int i = 0; i < listCounter; i++){
+    bitClear(pinVals[snake[i].y], snake[i].x);
   }
   
-  //Set the display bits
-  setBit(snake, listCounter, apple);
-
-/*
-  Serial.print("Switch:  ");
-  Serial.print(digitalRead(sw_pin));
-  Serial.print("\n");
-  Serial.print("X-axis: ");
-  Serial.print(analogRead(x_pin));
-  Serial.print("\n");
-  Serial.print("Y-axis: ");
-  Serial.println(analogRead(y_pin));
-  Serial.print("\n\n");
-  */
-
+  changeDirection(analogRead(x_pin), analogRead(y_pin), snake, listCounter, apple, dirUP, dirDOWN, dirLEFT, dirRIGHT);
   
+  onTheMove(snake, listCounter, dirUP, dirDOWN, dirLEFT, dirRIGHT);
+  delay(500);
   
-  
-  delay(100);
-  
+  for(int i = 0; i < listCounter; i++){
+    bitSet(pinVals[snake[i].y], snake[i].x);
+  }
 }
