@@ -36,7 +36,13 @@ const int sw_pin = 1;
 const int x_pin = 0;
 const int y_pin = 1;
 
+volatile int x_axe = analogRead(x_pin);
+volatile int y_axe = analogRead(y_pin);
+
+//to give to the next light in the snake the information, in which direction it moved
 boolean UP, DOWN, LEFT, RIGHT, UPRIGHT, RIGHTUP, DOWNRIGHT, RIGHTDOWN, UPLEFT, LEFTUP, DOWNLEFT, LEFTDOWN;
+
+//direction in which the snake actually is moving
 boolean dirUP, dirDOWN, dirLEFT, dirRIGHT;
 
 //defining led lights,each with x and y coordinate
@@ -100,16 +106,110 @@ void eatApple(Led snake [], int listCounter, Led apple){
   }
 }
 
+void moveUp(){
+  int head = 0;
+  
+  if(snake[head].y > snake[head+1].y){
+      snake[head].x--;
+      LEFTUP = true;
+    }else if(snake[head].y < snake[head+1].y){
+      snake[head].x--;
+      RIGHTUP = true;
+    }else if(snake[head].y == snake[head+1].y){
+      snake[head].x--;
+      UP = true;
+    }
+    
+    moveSnakeBody();
+    for(int i = 0; i < listCounter; i++){
+      if(snake[i].x < 0){
+        snake[i].x = 7;
+      } 
+    }
+    light(snake[head].x, snake[head].y, zLayer);
+}
+
+void moveDown(){
+
+  int head = 0;
+  
+  if(snake[head].y > snake[head+1].y){
+      snake[head].x++;
+      LEFTDOWN = true;
+    }else if(snake[head].y < snake[head+1].y){
+      snake[head].x++;
+      RIGHTDOWN = true;
+    }else if(snake[head].y == snake[head+1].y){
+      snake[head].x++;
+      DOWN = true;
+    }
+    
+    moveSnakeBody();
+    for(int i = 0; i < listCounter; i++){
+      if(snake[i].x > 7){
+        snake[i].x = 0;
+      } 
+    }
+    light(snake[head].x, snake[head].y, zLayer);
+}
+
+void moveRight(){
+  int head = 0;
+  
+  if(snake[head].x > snake[head+1].x){
+      snake[head].y--;
+      DOWNRIGHT = true;
+    }else if(snake[head].x < snake[head+1].x){
+      snake[head].y--;
+      UPRIGHT = true;
+    }else if(snake[head].x == snake[head+1].x){
+      snake[head].y--;
+      RIGHT = true;
+    }
+    
+    moveSnakeBody();
+    
+    for(int i = 0; i < listCounter; i++){
+      if(snake[i].y < 0){
+        snake[i].y = 7;
+      } 
+    }
+    light(snake[head].x, snake[head].y, zLayer);
+}
+
+void moveLeft(){
+  int head = 0;
+  
+  if(snake[head].x > snake[head+1].x){
+      snake[head].y++;
+      DOWNLEFT = true;
+    }else if(snake[head].x < snake[head+1].x){
+      snake[head].y++;
+      UPLEFT = true;
+    }else if(snake[head].x == snake[head+1].x){
+      snake[head].y++;
+      LEFT = true;
+    }
+    
+    moveSnakeBody();
+    for(int i = 0; i < listCounter; i++){
+      if(snake[i].y > 7){
+        snake[i].y = 0;
+      } 
+    }
+    light(snake[head].x, snake[head].y, zLayer);  
+}
+
 
 /*
  * By changing the movement, the whole of the snake should follow the direction. Each led light should
  * be checked in which direction they have to move on. For each led should the direction, in where it moved, be saved as boolean.
  * So every led have just to check, which way his precursor covered before and follow that way. 
  */
-void moveSnakeBody(Led snake[], int counter){
+void moveSnakeBody(){
   int head = 0;
 
-  for(int i = head; i < counter-2; i++){
+  for(int i = head; i < listCounter-2; i++){
       if(UP == true){
         snake[i+1].x--;
         UP = false;
@@ -237,136 +337,62 @@ void moveSnakeBody(Led snake[], int counter){
 //last of the list.
 
     if(UP == true){
-      snake[counter-1].x--;
+      snake[listCounter-1].x--;
       UP = false;
     }else if(DOWN == true){
-      snake[counter-1].x++;
+      snake[listCounter-1].x++;
       DOWN = false;
     }else if(LEFT == true){
-      snake[counter-1].y++;
+      snake[listCounter-1].y++;
       LEFT = false;
     }else if(RIGHT == true){
-      snake[counter-1].y--;
+      snake[listCounter-1].y--;
       RIGHT = false;
     }else if(UPRIGHT == true){
-      snake[counter-1].x--;
+      snake[listCounter-1].x--;
       UPRIGHT = false;
     }else if(RIGHTUP == true){
-      snake[counter-1].y--;
+      snake[listCounter-1].y--;
       RIGHTUP = false;
     }else if(DOWNRIGHT == true){
-      snake[counter-1].x++;
+      snake[listCounter-1].x++;
       DOWNRIGHT = false;
     }else if(RIGHTDOWN == true){
-      snake[counter-1].y--;
+      snake[listCounter-1].y--;
       RIGHTDOWN = false;
     }else if(UPLEFT == true){
-      snake[counter-1].x--;
+      snake[listCounter-1].x--;
       UPLEFT= false;
     }else if(LEFTUP == true){
-      snake[counter-1].y++;
+      snake[listCounter-1].y++;
       LEFTUP = false;
     }else if(DOWNLEFT == true){
-      snake[counter-1].x++;
+      snake[listCounter-1].x++;
       DOWNLEFT = false;
     }else if(LEFTDOWN == true){
-      snake[counter-1].y++;
+      snake[listCounter-1].y++;
       LEFTDOWN = false;
     }
 }
 
-void onTheMove(Led list[], int counter, boolean dirUP, boolean dirDOWN, boolean dirLEFT, boolean dirRIGHT){
+void onTheMove(){
   int head = 0;
 
   if(dirDOWN == true){
-    if(list[head].y > list[head+1].y){
-      list[head].x++;
-      LEFTDOWN = true;
-    }else if(list[head].y < list[head+1].y){
-      list[head].x++;
-      RIGHTDOWN = true;
-    }else if(list[head].y == list[head+1].y){
-      list[head].x++;
-      DOWN = true;
-    }
-    
-    moveSnakeBody(list, counter);
-    for(int i = 0; i < counter; i++){
-      if(list[i].x > 7){
-        list[i].x = 0;
-      } 
-    }
-    light(list[head].x, list[head].y, zLayer);
-    
-    
+    moveDown();
   }else if(dirUP == true){
-    if(list[head].y > list[head+1].y){
-      list[head].x--;
-      LEFTUP = true;
-    }else if(list[head].y < list[head+1].y){
-      list[head].x--;
-      RIGHTUP = true;
-    }else if(list[head].y == list[head+1].y){
-      list[head].x--;
-      UP = true;
-    }
-    
-    moveSnakeBody(list, counter);
-    for(int i = 0; i < counter; i++){
-      if(list[i].x < 0){
-        list[i].x = 7;
-      } 
-    }
-    light(list[head].x, list[head].y, zLayer);
-    
-    
+    moveUp();
   }else if(dirLEFT == true){
-    if(list[head].x > list[head+1].x){
-      list[head].y++;
-      DOWNLEFT = true;
-    }else if(list[head].x < list[head+1].x){
-      list[head].y++;
-      UPLEFT = true;
-    }else if(list[head].x == list[head+1].x){
-      list[head].y++;
-      LEFT = true;
-    }
-    
-    moveSnakeBody(list, counter);
-    for(int i = 0; i < counter; i++){
-      if(list[i].y > 7){
-        list[i].y = 0;
-      } 
-    }
-    light(list[head].x, list[head].y, zLayer);
-    
+    moveLeft();
   }else if(dirRIGHT == true){
-    if(list[head].x > list[head+1].x){
-      list[head].y--;
-      DOWNRIGHT = true;
-    }else if(list[head].x < list[head+1].x){
-      list[head].y--;
-      UPRIGHT = true;
-    }else if(list[head].x == list[head+1].x){
-      list[head].y--;
-      RIGHT = true;
-    }
-    
-    moveSnakeBody(list, counter);
-    
-    for(int i = 0; i < counter; i++){
-      if(list[i].y < 0){
-        list[i].y = 7;
-      } 
-    }
-    light(list[head].x, list[head].y, zLayer);
+    moveRight();
   }
 
-  for(int i = 0; i < counter; i++){
+  for(int i = 0; i < listCounter; i++){
     bitClear(pinVals[snake[i].y], snake[i].x);
   }
   
-  for(int i = 0; i < counter; i++){
+  for(int i = 0; i < listCounter; i++){
     bitSet(pinVals[snake[i].y], snake[i].x);
   }
   
@@ -375,7 +401,7 @@ void onTheMove(Led list[], int counter, boolean dirUP, boolean dirDOWN, boolean 
 /*
  * Changes direction by moving the joystick. 
  */
-void changeDirection(int x_axe, int y_axe, Led list[], int counter, Led apple, boolean dirUP, boolean dirDOWN, boolean dirLEFT, boolean dirRIGHT){
+void changeDirection(){
   int head = 0;
   
   if(y_axe > 1000){  //Down
@@ -384,29 +410,8 @@ void changeDirection(int x_axe, int y_axe, Led list[], int counter, Led apple, b
     dirUP = false;
     dirLEFT = false;
     dirRIGHT = false;
-    
-    if(list[head].y > list[head+1].y){
-      list[head].x++;
-      LEFTDOWN = true;
-    }else if(list[head].y < list[head+1].y){
-      list[head].x++;
-      RIGHTDOWN = true;
-    }else if(list[head].y == list[head+1].y){
-      list[head].x++;
-      DOWN = true;
-    }
-    
-    moveSnakeBody(list, counter);
 
-    //eatApple(snake, counter, apple);
-
-   //If the snake move toward a side of the cube, it will come out from the other side. 
-    for(int i = 0; i < counter; i++){
-      if(list[i].x > 7){
-        list[i].x = 0;
-      } 
-    }
-    light(list[head].x, list[head].y, zLayer);
+    moveDown();
     
   }else if(y_axe < 10){ //UP
 
@@ -414,28 +419,8 @@ void changeDirection(int x_axe, int y_axe, Led list[], int counter, Led apple, b
     dirDOWN = false;
     dirLEFT = false;
     dirRIGHT = false;
-    
-    if(list[head].y > list[head+1].y){
-      list[head].x--;
-      LEFTUP = true;
-    }else if(list[head].y < list[head+1].y){
-      list[head].x--;
-      RIGHTUP = true;
-    }else if(list[head].y == list[head+1].y){
-      list[head].x--;
-      UP = true;
-    }
-    
-    moveSnakeBody(list, counter);
 
-    //eatApple(snake, counter, apple);
-    
-    for(int i = 0; i < counter; i++){
-      if(list[i].x < 0){
-        list[i].x = 7;
-      } 
-    }
-    light(list[head].x, list[head].y, zLayer);
+    moveUp();
     
   }else if(x_axe < 10){//LEFT
 
@@ -443,28 +428,8 @@ void changeDirection(int x_axe, int y_axe, Led list[], int counter, Led apple, b
     dirUP = false;
     dirDOWN = false;
     dirRIGHT = false;
-  
-    if(list[head].x > list[head+1].x){
-      list[head].y++;
-      DOWNLEFT = true;
-    }else if(list[head].x < list[head+1].x){
-      list[head].y++;
-      UPLEFT = true;
-    }else if(list[head].x == list[head+1].x){
-      list[head].y++;
-      LEFT = true;
-    }
-    
-    moveSnakeBody(list, counter);
 
-    //eatApple(snake, counter, apple);
-    
-    for(int i = 0; i < counter; i++){
-      if(list[i].y > 7){
-        list[i].y = 0;
-      } 
-    }
-    light(list[head].x, list[head].y, zLayer);
+    moveLeft();
     
   }else if(x_axe > 1000){ //RIGHT
 
@@ -473,28 +438,7 @@ void changeDirection(int x_axe, int y_axe, Led list[], int counter, Led apple, b
     dirLEFT = false;
     dirDOWN = false;
     
-    if(list[head].x > list[head+1].x){
-      list[head].y--;
-      DOWNRIGHT = true;
-    }else if(list[head].x < list[head+1].x){
-      list[head].y--;
-      UPRIGHT = true;
-    }else if(list[head].x == list[head+1].x){
-      list[head].y--;
-      RIGHT = true;
-    }
-
-    
-    moveSnakeBody(list, counter);
-
-    //eatApple(snake, counter, apple);
-    
-    for(int i = 0; i < counter; i++){
-      if(list[i].y < 0){
-        list[i].y = 7;
-      } 
-    }
-    light(list[head].x, list[head].y, zLayer);
+    moveRight();
   }
 }
 
@@ -537,10 +481,11 @@ void setup(){
   pinMode(latchPin, OUTPUT);
   pinMode(clockPin, OUTPUT);
   pinMode(dataPin, OUTPUT);
-
-  pinMode(sw_pin, INPUT_PULLUP);
-  pinMode(x_pin, INPUT);
-  pinMode(y_pin, INPUT);
+  pinMode(sw_pin, INPUT);
+  digitalWrite(sw_pin, HIGH); 
+  attachInterrupt(sw_pin, changeDirection, LOW);
+  //pinMode(x_pin, INPUT);
+  //pinMode(y_pin, INPUT); 
   Serial.begin(9600);
  
   digitalWrite(latchPin,LOW);
@@ -602,16 +547,18 @@ void loop(){
 
   buttonPressed(); //Check if a button is pressed, if it is pressed Snake goes up or down
 
+/*
   for(int i = 0; i < listCounter; i++){
     bitClear(pinVals[snake[i].y], snake[i].x);
   }
+  */
   
-  changeDirection(analogRead(x_pin), analogRead(y_pin), snake, listCounter, apple, dirUP, dirDOWN, dirLEFT, dirRIGHT);
-  
-  onTheMove(snake, listCounter, dirUP, dirDOWN, dirLEFT, dirRIGHT);
+  onTheMove();
   delay(500);
-  
+
+  /*
   for(int i = 0; i < listCounter; i++){
     bitSet(pinVals[snake[i].y], snake[i].x);
   }
+  */
 }
