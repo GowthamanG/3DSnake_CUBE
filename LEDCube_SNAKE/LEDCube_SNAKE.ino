@@ -80,33 +80,6 @@ Led randomLight(){
   return light;
 }
 
-
-
-void eatApple(Led snake [], int listCounter, Led apple){
-  if(snake[0].x == apple.x && snake[0].y == apple.y){
-    bitClear(pinVals[apple.y], apple.x);
-    if(snake[listCounter-1].x < snake[listCounter-2].x){
-      Led newLED = createLight(snake[listCounter-1].x--, snake[listCounter-1].y);
-      listCounter++;
-      snake[listCounter-1] = newLED;
-    }else if(snake[listCounter-1].x > snake[listCounter-2].x){
-      Led newLED = createLight(snake[listCounter-1].x++, snake[listCounter-1].y);
-      listCounter++;
-      snake[listCounter-1] = newLED;
-    }else if(snake[listCounter-1].y > snake[listCounter-2].y){
-      Led newLED = createLight(snake[listCounter-1].x, snake[listCounter-1].y--);
-      listCounter++;
-      snake[listCounter-1] = newLED;
-    }else if(snake[listCounter-1].y < snake[listCounter-2].y){
-      Led newLED = createLight(snake[listCounter-1].x, snake[listCounter-1].y++);
-      listCounter++;
-      snake[listCounter-1] = newLED;
-    }
-    apple = randomLight();
-    bitSet(pinVals[apple.y], apple.x);
-  }
-}
-
 void moveUp(){
   int head = 0;
   
@@ -462,6 +435,40 @@ void buttonPressed(){
   
 }
 
+void eatApple(Led snake [], int listCounter, Led apple){
+  if(snake[0].x == apple.x && snake[0].y == apple.y){
+    bitClear(pinVals[apple.y], apple.x);
+    if(snake[listCounter-1].x < snake[listCounter-2].x){
+      Led newLED = createLight(snake[listCounter-1].x--, snake[listCounter-1].y);
+      listCounter++;
+      snake[listCounter-1] = newLED;
+    }else if(snake[listCounter-1].x > snake[listCounter-2].x){
+      Led newLED = createLight(snake[listCounter-1].x++, snake[listCounter-1].y);
+      listCounter++;
+      snake[listCounter-1] = newLED;
+    }else if(snake[listCounter-1].y > snake[listCounter-2].y){
+      Led newLED = createLight(snake[listCounter-1].x, snake[listCounter-1].y--);
+      listCounter++;
+      snake[listCounter-1] = newLED;
+    }else if(snake[listCounter-1].y < snake[listCounter-2].y){
+      Led newLED = createLight(snake[listCounter-1].x, snake[listCounter-1].y++);
+      listCounter++;
+      snake[listCounter-1] = newLED;
+    }
+    
+    for(int i = 0; i < listCounter; i++){
+      zLayer++;
+      if(zLayer > 9){
+        zLayer = 2;
+      } 
+      light(snake[i].x, snake[i].y , zLayer);
+    }
+    moveSnakeBody();
+    apple = randomLight();
+    bitSet(pinVals[apple.y], apple.x);
+  }
+}
+
 
 
 void setup(){
@@ -518,7 +525,7 @@ void setup(){
   snake[4] = led5;
   snake[5] = led6;*/
 
-  //apple = randomLight();
+  apple = randomLight();
 
   dirUP = false; 
   dirDOWN = false; 
@@ -548,6 +555,7 @@ void loop(){
     }
     
     onTheMove();
+    eatApple();
     elapsedTime = 0;
     readInput = true;
     
@@ -563,6 +571,7 @@ void loop(){
     }
 
     changeDirection(analogRead(x_pin), analogRead(y_pin));
+    eatApple();
     readInput = false;
     
     
