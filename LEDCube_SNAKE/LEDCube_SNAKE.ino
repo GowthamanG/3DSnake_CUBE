@@ -36,8 +36,8 @@ const int sw_pin = 1;
 const int x_pin = 0;
 const int y_pin = 1;
 
-volatile int x_axe = analogRead(x_pin);
-volatile int y_axe = analogRead(y_pin);
+int x_axe = analogRead(x_pin);
+int y_axe = analogRead(y_pin);
 
 //to give to the next light in the snake the information, in which direction it moved
 boolean UP, DOWN, LEFT, RIGHT, UPRIGHT, RIGHTUP, DOWNRIGHT, RIGHTDOWN, UPLEFT, LEFTUP, DOWNLEFT, LEFTDOWN;
@@ -387,14 +387,6 @@ void onTheMove(){
   }else if(dirRIGHT == true){
     moveRight();
   }
-
-  for(int i = 0; i < listCounter; i++){
-    bitClear(pinVals[snake[i].y], snake[i].x);
-  }
-  
-  for(int i = 0; i < listCounter; i++){
-    bitSet(pinVals[snake[i].y], snake[i].x);
-  }
   
 }
 
@@ -483,9 +475,9 @@ void setup(){
   pinMode(dataPin, OUTPUT);
   pinMode(sw_pin, INPUT);
   digitalWrite(sw_pin, HIGH); 
-  attachInterrupt(sw_pin, changeDirection, LOW);
-  //pinMode(x_pin, INPUT);
-  //pinMode(y_pin, INPUT); 
+  //attachInterrupt(sw_pin, changeDirection, HIGH);
+  pinMode(x_pin, INPUT);
+  pinMode(y_pin, INPUT); 
   Serial.begin(9600);
  
   digitalWrite(latchPin,LOW);
@@ -504,7 +496,9 @@ void setup(){
   digitalWrite(10, HIGH);
 
   pinMode(buttonPinUp, INPUT); //Button Up
+  attachInterrupt(buttonPinUp, buttonPressed, HIGH);
   pinMode(buttonPinDown, INPUT); // Button Down
+  attachInterrupt(buttonPinDown, buttonPressed, HIGH);
 
   Led led1 = {xc, yc};
   listCounter++;
@@ -552,9 +546,24 @@ void loop(){
     bitClear(pinVals[snake[i].y], snake[i].x);
   }
   */
-  
+
+for(int i = 0; i < listCounter; i++){
+  bitClear(pinVals[snake[i].y], snake[i].x);
+}
+
+if(x_axe > 1000 || x_axe < 10 || y_axe > 1000 || y_axe < 10){
+  changeDirection();
+}else{
   onTheMove();
-  delay(500);
+}
+
+
+for(int i = 0; i < listCounter; i++){
+  bitSet(pinVals[snake[i].y], snake[i].x);
+}
+
+  
+delay(500);
 
   /*
   for(int i = 0; i < listCounter; i++){
