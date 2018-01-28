@@ -36,9 +36,6 @@ const int sw_pin = 1;
 const int x_pin = 0;
 const int y_pin = 1;
 
-int x_axe = analogRead(x_pin);
-int y_axe = analogRead(y_pin);
-
 //to give to the next light in the snake the information, in which direction it moved
 boolean UP, DOWN, LEFT, RIGHT, UPRIGHT, RIGHTUP, DOWNRIGHT, RIGHTDOWN, UPLEFT, LEFTUP, DOWNLEFT, LEFTDOWN;
 
@@ -56,6 +53,10 @@ Led snake [50];
 int listCounter;
 
 Led apple;
+
+int elapsedTime;
+bool readInput;
+unsigned long previousTime;
 
 
 void light (int x, int y, int z){
@@ -393,15 +394,16 @@ void onTheMove(){
 /*
  * Changes direction by moving the joystick. 
  */
-void changeDirection(){
+void changeDirection(int x_axe, int y_axe){
   int head = 0;
   
-  if(y_axe > 1000){  //Down
+  if(y_axe > 1000){//Down
 
     dirDOWN = true;
     dirUP = false;
     dirLEFT = false;
     dirRIGHT = false;
+    
 
     moveDown();
     
@@ -473,9 +475,7 @@ void setup(){
   pinMode(latchPin, OUTPUT);
   pinMode(clockPin, OUTPUT);
   pinMode(dataPin, OUTPUT);
-  pinMode(sw_pin, INPUT);
-  digitalWrite(sw_pin, HIGH); 
-  //attachInterrupt(sw_pin, changeDirection, HIGH);
+  pinMode(sw_pin, INPUT_PULLUP);
   pinMode(x_pin, INPUT);
   pinMode(y_pin, INPUT); 
   Serial.begin(9600);
@@ -496,9 +496,7 @@ void setup(){
   digitalWrite(10, HIGH);
 
   pinMode(buttonPinUp, INPUT); //Button Up
-  attachInterrupt(buttonPinUp, buttonPressed, HIGH);
   pinMode(buttonPinDown, INPUT); // Button Down
-  attachInterrupt(buttonPinDown, buttonPressed, HIGH);
 
   Led led1 = {xc, yc};
   listCounter++;
@@ -541,33 +539,38 @@ void loop(){
 
   buttonPressed(); //Check if a button is pressed, if it is pressed Snake goes up or down
 
-/*
-  for(int i = 0; i < listCounter; i++){
-    bitClear(pinVals[snake[i].y], snake[i].x);
+  unsigned long currentTime = millis();
+  elapsedTime += currentTime - previousTime;
+
+  if(elapsedTime > 200){
+    for(int i = 0; i < listCounter; i++){
+      bitClear(pinVals[snake[i].y], snake[i].x);
+    }
+    
+    onTheMove();
+    elapsedTime = 0;
+    readInput = true;
+    
+    for(int i = 0; i < listCounter; i++){
+      bitSet(pinVals[snake[i].y], snake[i].x);
+    }
   }
-  */
 
-for(int i = 0; i < listCounter; i++){
-  bitClear(pinVals[snake[i].y], snake[i].x);
-}
+  if(readInput){
+    
+    for(int i = 0; i < listCounter; i++){
+      bitClear(pinVals[snake[i].y], snake[i].x);
+    }
 
-if(x_axe > 1000 || x_axe < 10 || y_axe > 1000 || y_axe < 10){
-  changeDirection();
-}else{
-  onTheMove();
-}
-
-
-for(int i = 0; i < listCounter; i++){
-  bitSet(pinVals[snake[i].y], snake[i].x);
-}
-
-  
-delay(500);
-
-  /*
-  for(int i = 0; i < listCounter; i++){
-    bitSet(pinVals[snake[i].y], snake[i].x);
+    changeDirection(analogRead(x_pin), analogRead(y_pin));
+    readInput = false;
+    
+    
+    for(int i = 0; i < listCounter; i++){
+      bitSet(pinVals[snake[i].y], snake[i].x);
+    }
   }
-  */
+
+  previousTime = currentTime;
+
 }
