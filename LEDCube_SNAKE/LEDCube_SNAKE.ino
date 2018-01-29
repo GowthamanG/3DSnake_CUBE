@@ -83,7 +83,6 @@ Led randomLight(){
 
 void eatApple(){
   if(snake[0].x == apple.x && snake[0].y == apple.y){
-    bitClear(pinVals[apple.y], apple.x);
     if(snake[listCounter-1].x < snake[listCounter-2].x){
       Led newLED = createLight(snake[listCounter-1].x--, snake[listCounter-1].y);
       listCounter++;
@@ -119,23 +118,26 @@ void moveUp(){
   int head = 0;
   
   if(snake[head].y > snake[head+1].y){
-      snake[head].x--;
-      LEFTUP = true;
-    }else if(snake[head].y < snake[head+1].y){
-      snake[head].x--;
-      RIGHTUP = true;
-    }else if(snake[head].y == snake[head+1].y){
-      snake[head].x--;
-      UP = true;
-    }
+    snake[head].x--;
+    LEFTUP = true;
+  }else if(snake[head].y < snake[head+1].y){
+    snake[head].x--;
+    RIGHTUP = true;
+  }else if(snake[head].y == snake[head+1].y){
+    snake[head].x--;
+    UP = true;
+  }
     
-    moveSnakeBody();
-    for(int i = 0; i < listCounter; i++){
-      if(snake[i].x < 0){
-        snake[i].x = 7;
-      } 
+  moveSnakeBody();
+  
+  for(int i = 0; i < listCounter; i++){
+    if(snake[i].x < 0){
+      snake[i].x = 7;
     }
-    //light(snake[head].x, snake[head].y, zLayer);
+    moveSnakeBody(); 
+  }
+  
+  //light(snake[head].x, snake[head].y, zLayer);
 }
 
 void moveDown(){
@@ -143,70 +145,77 @@ void moveDown(){
   int head = 0;
   
   if(snake[head].y > snake[head+1].y){
-      snake[head].x++;
-      LEFTDOWN = true;
-    }else if(snake[head].y < snake[head+1].y){
-      snake[head].x++;
-      RIGHTDOWN = true;
-    }else if(snake[head].y == snake[head+1].y){
-      snake[head].x++;
-      DOWN = true;
-    }
+    snake[head].x++;
+    LEFTDOWN = true;
+  }else if(snake[head].y < snake[head+1].y){
+    snake[head].x++;
+    RIGHTDOWN = true;
+  }else if(snake[head].y == snake[head+1].y){
+    snake[head].x++;
+    DOWN = true;
+  }
     
-    moveSnakeBody();
-    for(int i = 0; i < listCounter; i++){
-      if(snake[i].x > 7){
-        snake[i].x = 0;
-      } 
+  moveSnakeBody();
+
+  for(int i = 0; i < listCounter; i++){
+    if(snake[i].x > 7){
+      snake[i].x = 0;
     }
-    //light(snake[head].x, snake[head].y, zLayer);
+    moveSnakeBody(); 
+  }
+  //light(snake[head].x, snake[head].y, zLayer);
 }
 
 void moveRight(){
   int head = 0;
   
   if(snake[head].x > snake[head+1].x){
-      snake[head].y--;
-      DOWNRIGHT = true;
-    }else if(snake[head].x < snake[head+1].x){
-      snake[head].y--;
-      UPRIGHT = true;
-    }else if(snake[head].x == snake[head+1].x){
-      snake[head].y--;
-      RIGHT = true;
-    }
+    snake[head].y--;
+    DOWNRIGHT = true;
+  }else if(snake[head].x < snake[head+1].x){
+    snake[head].y--;
+    UPRIGHT = true;
+  }else if(snake[head].x == snake[head+1].x){
+    snake[head].y--;
+    RIGHT = true;
+  }
     
-    moveSnakeBody();
-    
-    for(int i = 0; i < listCounter; i++){
-      if(snake[i].y < 0){
-        snake[i].y = 7;
-      } 
+  moveSnakeBody();
+
+  for(int i = 0; i < listCounter; i++){
+    if(snake[i].y < 0){
+      snake[i].y = 7;
     }
-    //light(snake[head].x, snake[head].y, zLayer);
+    moveSnakeBody(); 
+  }
+  
+  //light(snake[head].x, snake[head].y, zLayer);
 }
 
 void moveLeft(){
   int head = 0;
   
   if(snake[head].x > snake[head+1].x){
-      snake[head].y++;
-      DOWNLEFT = true;
-    }else if(snake[head].x < snake[head+1].x){
-      snake[head].y++;
-      UPLEFT = true;
-    }else if(snake[head].x == snake[head+1].x){
-      snake[head].y++;
-      LEFT = true;
-    }
+    snake[head].y++;
+    DOWNLEFT = true;
+  }else if(snake[head].x < snake[head+1].x){
+    snake[head].y++;
+    UPLEFT = true;
+  }else if(snake[head].x == snake[head+1].x){
+    snake[head].y++;
+    LEFT = true;
+  }
     
-    moveSnakeBody();
-    for(int i = 0; i < listCounter; i++){
-      if(snake[i].y > 7){
-        snake[i].y = 0;
-      } 
+  moveSnakeBody();
+
+  for(int i = 0; i < listCounter; i++){
+    if(snake[i].y > 7){
+      snake[i].y = 0;
     }
-    //light(snake[head].x, snake[head].y, zLayer);  
+    moveSnakeBody(); 
+  }
+  
+  //light(snake[head].x, snake[head].y, zLayer);  
 }
 
 
@@ -397,7 +406,6 @@ void onTheMove(){
     moveRight();
   }
   eatApple();
-  
 }
 
 /*
@@ -510,9 +518,9 @@ void setup(){
   listCounter++;
   Led led2 = {xc2, yc2};
   listCounter++;
-  Led led3 = {xc3, yc3};
+  /*Led led3 = {xc3, yc3};
   listCounter++;
-  /*Led led4 = {xc4, yc4};
+  Led led4 = {xc4, yc4};
   listCounter++;
   Led led5 = {xc5, yc5};
   listCounter++;
@@ -521,8 +529,8 @@ void setup(){
 
   snake[0] = led1;
   snake[1] = led2;
-  snake[2] = led3;
-  /*snake[3] = led4;
+  /*snake[2] = led3;
+  snake[3] = led4;
   snake[4] = led5;
   snake[5] = led6;*/
 
@@ -553,71 +561,6 @@ void loop(){
   elapsedTime += currentTime - previousTime;
 
   if(zLayer == 2){
-    if(elapsedTime > 550){
-      for(int i = 0; i < listCounter; i++){
-        bitClear(pinVals[snake[i].y], snake[i].x);
-      }
-      onTheMove();
-      elapsedTime = 0;
-      readInput = true;
-    
-      for(int i = 0; i < listCounter; i++){
-        bitSet(pinVals[snake[i].y], snake[i].x);
-      }
-    }
-  }else if(zLayer == 3){
-    if(elapsedTime > 500){
-      for(int i = 0; i < listCounter; i++){
-        bitClear(pinVals[snake[i].y], snake[i].x);
-      }
-      onTheMove();
-      elapsedTime = 0;
-      readInput = true;
-    
-      for(int i = 0; i < listCounter; i++){
-        bitSet(pinVals[snake[i].y], snake[i].x);
-      }
-    }
-  }else if(zLayer == 4){
-    if(elapsedTime > 450){
-      for(int i = 0; i < listCounter; i++){
-        bitClear(pinVals[snake[i].y], snake[i].x);
-      }
-      onTheMove();
-      elapsedTime = 0;
-      readInput = true;
-    
-      for(int i = 0; i < listCounter; i++){
-        bitSet(pinVals[snake[i].y], snake[i].x);
-      }
-    }
-  }else if(zLayer == 5){
-    if(elapsedTime > 400){
-      for(int i = 0; i < listCounter; i++){
-        bitClear(pinVals[snake[i].y], snake[i].x);
-      }
-      onTheMove();
-      elapsedTime = 0;
-      readInput = true;
-    
-      for(int i = 0; i < listCounter; i++){
-        bitSet(pinVals[snake[i].y], snake[i].x);
-      }
-    }
-  }else if(zLayer == 6){
-    if(elapsedTime > 350){
-      for(int i = 0; i < listCounter; i++){
-        bitClear(pinVals[snake[i].y], snake[i].x);
-      }
-      onTheMove();
-      elapsedTime = 0;
-      readInput = true;
-    
-      for(int i = 0; i < listCounter; i++){
-        bitSet(pinVals[snake[i].y], snake[i].x);
-      }
-    }
-  }else if(zLayer == 7){
     if(elapsedTime > 300){
       for(int i = 0; i < listCounter; i++){
         bitClear(pinVals[snake[i].y], snake[i].x);
@@ -630,7 +573,59 @@ void loop(){
         bitSet(pinVals[snake[i].y], snake[i].x);
       }
     }
-  }else if(zLayer == 8){
+  }else if(zLayer == 3){
+    if(elapsedTime > 290){
+      for(int i = 0; i < listCounter; i++){
+        bitClear(pinVals[snake[i].y], snake[i].x);
+      }
+      onTheMove();
+      elapsedTime = 0;
+      readInput = true;
+    
+      for(int i = 0; i < listCounter; i++){
+        bitSet(pinVals[snake[i].y], snake[i].x);
+      }
+    }
+  }else if(zLayer == 4){
+    if(elapsedTime > 280){
+      for(int i = 0; i < listCounter; i++){
+        bitClear(pinVals[snake[i].y], snake[i].x);
+      }
+      onTheMove();
+      elapsedTime = 0;
+      readInput = true;
+    
+      for(int i = 0; i < listCounter; i++){
+        bitSet(pinVals[snake[i].y], snake[i].x);
+      }
+    }
+  }else if(zLayer == 5){
+    if(elapsedTime > 270){
+      for(int i = 0; i < listCounter; i++){
+        bitClear(pinVals[snake[i].y], snake[i].x);
+      }
+      onTheMove();
+      elapsedTime = 0;
+      readInput = true;
+    
+      for(int i = 0; i < listCounter; i++){
+        bitSet(pinVals[snake[i].y], snake[i].x);
+      }
+    }
+  }else if(zLayer == 6){
+    if(elapsedTime > 260){
+      for(int i = 0; i < listCounter; i++){
+        bitClear(pinVals[snake[i].y], snake[i].x);
+      }
+      onTheMove();
+      elapsedTime = 0;
+      readInput = true;
+    
+      for(int i = 0; i < listCounter; i++){
+        bitSet(pinVals[snake[i].y], snake[i].x);
+      }
+    }
+  }else if(zLayer == 7){
     if(elapsedTime > 250){
       for(int i = 0; i < listCounter; i++){
         bitClear(pinVals[snake[i].y], snake[i].x);
@@ -643,8 +638,21 @@ void loop(){
         bitSet(pinVals[snake[i].y], snake[i].x);
       }
     }
+  }else if(zLayer == 8){
+    if(elapsedTime > 240){
+      for(int i = 0; i < listCounter; i++){
+        bitClear(pinVals[snake[i].y], snake[i].x);
+      }
+      onTheMove();
+      elapsedTime = 0;
+      readInput = true;
+    
+      for(int i = 0; i < listCounter; i++){
+        bitSet(pinVals[snake[i].y], snake[i].x);
+      }
+    }
   }else if(zLayer == 9){
-    if(elapsedTime > 200){
+    if(elapsedTime > 230){
       for(int i = 0; i < listCounter; i++){
         bitClear(pinVals[snake[i].y], snake[i].x);
       }
@@ -674,5 +682,12 @@ void loop(){
   }
 
   previousTime = currentTime;
+
+  /*//Gameover
+  for(int i = 1; i < listCounter; i++){
+    if(snake[0].x == snake[i].x && snake[0].y == snake[i].y){
+      while(1);
+    }
+  }*/
 
 }
