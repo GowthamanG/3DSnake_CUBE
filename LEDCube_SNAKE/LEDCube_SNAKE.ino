@@ -92,11 +92,11 @@ void eatApple(){
       listCounter++;
       snake[listCounter-1] = newLED;
     }else if(snake[listCounter-1].y > snake[listCounter-2].y){
-      Led newLED = createLight(snake[listCounter-1].x, snake[listCounter-1].y--);
+      Led newLED = createLight(snake[listCounter-1].x, snake[listCounter-1].y++);
       listCounter++;
       snake[listCounter-1] = newLED;
     }else if(snake[listCounter-1].y < snake[listCounter-2].y){
-      Led newLED = createLight(snake[listCounter-1].x, snake[listCounter-1].y++);
+      Led newLED = createLight(snake[listCounter-1].x, snake[listCounter-1].y--);
       listCounter++;
       snake[listCounter-1] = newLED;
     }
@@ -656,7 +656,8 @@ void loop(){
       for(int i = 0; i < listCounter; i++){
         bitClear(pinVals[snake[i].y], snake[i].x);
       }
-      onTheMove();
+      //onTheMove();
+      changeDirection(analogRead(x_pin), analogRead(y_pin));
       elapsedTime = 0;
       readInput = true;
     
