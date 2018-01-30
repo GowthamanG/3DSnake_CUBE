@@ -22,14 +22,14 @@ int yc2 = 6;
 int xc3 = 2;
 int yc3 = 5;
 
-/*int xc4 = 2;
+int xc4 = 2;
 int yc4 = 4;
 
 int xc5 = 2;
 int yc5 = 3;
 
 int xc6 = 2;
-int yc6 = 2;*/
+int yc6 = 2;
 
 
 const int sw_pin = 1;
@@ -48,9 +48,9 @@ typedef struct Led{
   int y;
 }Led;
 
-Led snake [50];
+Led snake [20];
 
-int listCounter;
+int listCounter = 0;
 
 Led apple;
 
@@ -84,7 +84,7 @@ Led randomLight(){
 void eatApple(){
   if(snake[0].x == apple.x && snake[0].y == apple.y){
     bitClear(pinVals[apple.y], apple.x);
-    if(snake[listCounter-1].x < snake[listCounter-2].x){
+    /*if(snake[listCounter-1].x < snake[listCounter-2].x){
       Led newLED = createLight(snake[listCounter-1].x--, snake[listCounter-1].y);
       listCounter++;
       snake[listCounter-1] = newLED;
@@ -100,15 +100,12 @@ void eatApple(){
       Led newLED = createLight(snake[listCounter-1].x, snake[listCounter-1].y--);
       listCounter++;
       snake[listCounter-1] = newLED;
-    }
+    }*/
 
     moveSnakeBody();
 
     digitalWrite(zLayer, HIGH);
-    zLayer++;
-    if(zLayer > 9){
-      zLayer = 2;
-    } 
+    zLayer++; 
     digitalWrite(zLayer, LOW);
     
     
@@ -481,6 +478,7 @@ void buttonPressed(){
   for(int i = 0; i < listCounter; i++){
     light(snake[i].x, snake[i].y , zLayer);
   }
+  delay(100);
 }
 
 void setup(){
@@ -523,19 +521,19 @@ void setup(){
   listCounter++;
   Led led3 = {xc3, yc3};
   listCounter++;
-  /*Led led4 = {xc4, yc4};
+  Led led4 = {xc4, yc4};
   listCounter++;
   Led led5 = {xc5, yc5};
   listCounter++;
   Led led6 = {xc6, yc6};
-  listCounter++;*/
+  listCounter++;
 
   snake[0] = led1;
   snake[1] = led2;
   snake[2] = led3;
-  /*snake[3] = led4;
+  snake[3] = led4;
   snake[4] = led5;
-  snake[5] = led6;*/
+  snake[5] = led6;
 
   dirUP = false; 
   dirDOWN = false; 
@@ -558,140 +556,145 @@ void loop(){
   }
   digitalWrite(latchPin, HIGH);
 
-  buttonPressed(); //Check if a button is pressed, if it is pressed Snake goes up or down
+  if(zLayer > 9){
+    delay(100);
+ 
+    //Set the display bits
+    //bitClear(pinVals[yc], xc);
+    xc = random(8);
+    yc = random(8);
+    bitSet(pinVals[yc], xc);
+    for(int i = 2; i < 10; i++){
+      digitalWrite(i, LOW);
+    }
+  }else{
 
-  unsigned long currentTime = millis();
-  elapsedTime += currentTime - previousTime;
+    buttonPressed(); //Check if a button is pressed, if it is pressed Snake goes up or down
 
-  if(zLayer == 2){
-    if(elapsedTime > 300){
-      for(int i = 0; i < listCounter; i++){
-        bitClear(pinVals[snake[i].y], snake[i].x);
-      }
-      onTheMove();
-      elapsedTime = 0;
-      readInput = true;
+    unsigned long currentTime = millis();
+    elapsedTime += currentTime - previousTime;
+
+    if(zLayer == 2){
+      if(elapsedTime > 300){
+        for(int i = 0; i < listCounter; i++){
+          bitClear(pinVals[snake[i].y], snake[i].x);
+        }
+        onTheMove();
+        elapsedTime = 0;
+        readInput = true;
     
-      for(int i = 0; i < listCounter; i++){
-        bitSet(pinVals[snake[i].y], snake[i].x);
+        for(int i = 0; i < listCounter; i++){
+          bitSet(pinVals[snake[i].y], snake[i].x);
+        }
+      }
+    }else if(zLayer == 3){
+      if(elapsedTime > 290){
+        for(int i = 0; i < listCounter; i++){
+          bitClear(pinVals[snake[i].y], snake[i].x);
+        }
+        onTheMove();
+        elapsedTime = 0;
+        readInput = true;
+    
+        for(int i = 0; i < listCounter; i++){
+          bitSet(pinVals[snake[i].y], snake[i].x);
+        }
+      }
+    }else if(zLayer == 4){
+      if(elapsedTime > 240){
+        for(int i = 0; i < listCounter; i++){
+          bitClear(pinVals[snake[i].y], snake[i].x);
+        }
+        onTheMove();
+        elapsedTime = 0;
+        readInput = true;
+    
+        for(int i = 0; i < listCounter; i++){
+          bitSet(pinVals[snake[i].y], snake[i].x);
+        }
+      }
+    }else if(zLayer == 5){
+      if(elapsedTime > 200){
+        for(int i = 0; i < listCounter; i++){
+          bitClear(pinVals[snake[i].y], snake[i].x);
+        }
+        onTheMove();
+        elapsedTime = 0;
+        readInput = true;
+    
+        for(int i = 0; i < listCounter; i++){
+          bitSet(pinVals[snake[i].y], snake[i].x);
+        }
+      }
+    }else if(zLayer == 6){
+      if(elapsedTime > 160){
+        for(int i = 0; i < listCounter; i++){
+          bitClear(pinVals[snake[i].y], snake[i].x);
+        }
+        onTheMove();
+        elapsedTime = 0;
+        readInput = true;
+    
+        for(int i = 0; i < listCounter; i++){
+          bitSet(pinVals[snake[i].y], snake[i].x);
+        }
+      }
+    }else if(zLayer == 7){
+      if(elapsedTime > 120){
+        for(int i = 0; i < listCounter; i++){
+          bitClear(pinVals[snake[i].y], snake[i].x);
+        }
+        onTheMove();
+        elapsedTime = 0;
+        readInput = true;
+    
+        for(int i = 0; i < listCounter; i++){
+          bitSet(pinVals[snake[i].y], snake[i].x);
+        }
+      }
+    }else if(zLayer == 8){
+      if(elapsedTime > 70){
+        for(int i = 0; i < listCounter; i++){
+          bitClear(pinVals[snake[i].y], snake[i].x);
+        }
+        onTheMove();
+        elapsedTime = 0;
+        readInput = true;
+    
+        for(int i = 0; i < listCounter; i++){
+          bitSet(pinVals[snake[i].y], snake[i].x);
+        }
+      }
+    }else if(zLayer == 9){
+      if(elapsedTime > 10){
+        for(int i = 0; i < listCounter; i++){
+          bitClear(pinVals[snake[i].y], snake[i].x);
+        }
+        onTheMove();
+        elapsedTime = 0;
+        readInput = true;
+    
+        for(int i = 0; i < listCounter; i++){
+          bitSet(pinVals[snake[i].y], snake[i].x);
+        }
       }
     }
-  }else if(zLayer == 3){
-    if(elapsedTime > 290){
-      for(int i = 0; i < listCounter; i++){
-        bitClear(pinVals[snake[i].y], snake[i].x);
-      }
-      onTheMove();
-      elapsedTime = 0;
-      readInput = true;
+
+    if(readInput){
     
       for(int i = 0; i < listCounter; i++){
-        bitSet(pinVals[snake[i].y], snake[i].x);
-      }
-    }
-  }else if(zLayer == 4){
-    if(elapsedTime > 280){
-      for(int i = 0; i < listCounter; i++){
         bitClear(pinVals[snake[i].y], snake[i].x);
       }
-      onTheMove();
-      elapsedTime = 0;
-      readInput = true;
-    
-      for(int i = 0; i < listCounter; i++){
-        bitSet(pinVals[snake[i].y], snake[i].x);
-      }
-    }
-  }else if(zLayer == 5){
-    if(elapsedTime > 270){
-      for(int i = 0; i < listCounter; i++){
-        bitClear(pinVals[snake[i].y], snake[i].x);
-      }
-      onTheMove();
-      elapsedTime = 0;
-      readInput = true;
-    
-      for(int i = 0; i < listCounter; i++){
-        bitSet(pinVals[snake[i].y], snake[i].x);
-      }
-    }
-  }else if(zLayer == 6){
-    if(elapsedTime > 260){
-      for(int i = 0; i < listCounter; i++){
-        bitClear(pinVals[snake[i].y], snake[i].x);
-      }
-      onTheMove();
-      elapsedTime = 0;
-      readInput = true;
-    
-      for(int i = 0; i < listCounter; i++){
-        bitSet(pinVals[snake[i].y], snake[i].x);
-      }
-    }
-  }else if(zLayer == 7){
-    if(elapsedTime > 250){
-      for(int i = 0; i < listCounter; i++){
-        bitClear(pinVals[snake[i].y], snake[i].x);
-      }
-      onTheMove();
-      elapsedTime = 0;
-      readInput = true;
-    
-      for(int i = 0; i < listCounter; i++){
-        bitSet(pinVals[snake[i].y], snake[i].x);
-      }
-    }
-  }else if(zLayer == 8){
-    if(elapsedTime > 240){
-      for(int i = 0; i < listCounter; i++){
-        bitClear(pinVals[snake[i].y], snake[i].x);
-      }
-      onTheMove();
-      elapsedTime = 0;
-      readInput = true;
-    
-      for(int i = 0; i < listCounter; i++){
-        bitSet(pinVals[snake[i].y], snake[i].x);
-      }
-    }
-  }else if(zLayer == 9){
-    if(elapsedTime > 230){
-      for(int i = 0; i < listCounter; i++){
-        bitClear(pinVals[snake[i].y], snake[i].x);
-      }
-      //onTheMove();
+
       changeDirection(analogRead(x_pin), analogRead(y_pin));
-      elapsedTime = 0;
-      readInput = true;
+      readInput = false;
+    
     
       for(int i = 0; i < listCounter; i++){
         bitSet(pinVals[snake[i].y], snake[i].x);
       }
     }
+
+    previousTime = currentTime;
   }
-
-  if(readInput){
-    
-    for(int i = 0; i < listCounter; i++){
-      bitClear(pinVals[snake[i].y], snake[i].x);
-    }
-
-    changeDirection(analogRead(x_pin), analogRead(y_pin));
-    readInput = false;
-    
-    
-    for(int i = 0; i < listCounter; i++){
-      bitSet(pinVals[snake[i].y], snake[i].x);
-    }
-  }
-
-  previousTime = currentTime;
-
-  /*//Gameover
-  for(int i = 1; i < listCounter; i++){
-    if(snake[0].x == snake[i].x && snake[0].y == snake[i].y){
-      while(1);
-    }
-  }*/
-
 }
