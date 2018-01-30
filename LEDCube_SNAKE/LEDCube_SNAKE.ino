@@ -83,6 +83,7 @@ Led randomLight(){
 
 void eatApple(){
   if(snake[0].x == apple.x && snake[0].y == apple.y){
+    bitClear(pinVals[apple.y], apple.x);
     if(snake[listCounter-1].x < snake[listCounter-2].x){
       Led newLED = createLight(snake[listCounter-1].x--, snake[listCounter-1].y);
       listCounter++;
@@ -101,6 +102,8 @@ void eatApple(){
       snake[listCounter-1] = newLED;
     }
 
+    moveSnakeBody();
+
     digitalWrite(zLayer, HIGH);
     zLayer++;
     if(zLayer > 9){
@@ -108,7 +111,7 @@ void eatApple(){
     } 
     digitalWrite(zLayer, LOW);
     
-    moveSnakeBody();
+    
     apple = randomLight();
     bitSet(pinVals[apple.y], apple.x);
   }
@@ -518,9 +521,9 @@ void setup(){
   listCounter++;
   Led led2 = {xc2, yc2};
   listCounter++;
-  /*Led led3 = {xc3, yc3};
+  Led led3 = {xc3, yc3};
   listCounter++;
-  Led led4 = {xc4, yc4};
+  /*Led led4 = {xc4, yc4};
   listCounter++;
   Led led5 = {xc5, yc5};
   listCounter++;
@@ -529,8 +532,8 @@ void setup(){
 
   snake[0] = led1;
   snake[1] = led2;
-  /*snake[2] = led3;
-  snake[3] = led4;
+  snake[2] = led3;
+  /*snake[3] = led4;
   snake[4] = led5;
   snake[5] = led6;*/
 
