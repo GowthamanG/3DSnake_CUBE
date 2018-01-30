@@ -1051,22 +1051,13 @@ void loop(){
     }
   }
   
-  //chooseLetter(num);
-  helloWorld(num);
+  chooseLetter(num);
+  //helloWorld(num);
   num++;
-  if(num > 10){
+  if(num > 24){
     num = 1;
   }
 
-  /*letterA();
-
-  digitalWrite(zLayer, HIGH);
-  zLayer++;
-  if(zLayer > 9){
-    zLayer = 2;
-  }
-
-  delay(100);*/
    
 
 }
