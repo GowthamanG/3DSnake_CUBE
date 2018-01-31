@@ -12,7 +12,7 @@ byte pinVals[8];
 int zLayer = 2;
 
 void lightShow1(int num){
-  int k = 7;
+  for(int h = 7; h < 0; h--){
     for(int i = 0; i < 8; i++){
       for(int j = 0; j < 8; j++){
         bitClear(pinVals[j], i);
@@ -20,23 +20,15 @@ void lightShow1(int num){
     }
 
     for(int i = 0; i < 8; i++){
-        bitSet(pinVals[k], i);
-    }
-    
-    k--;
-    if(k < 0){
-      k = 7;
-    }
-  
-    if(k > 7) {
-      num -= 10;
+        bitSet(pinVals[h], i);
     }
     delay(num);
+  }
 }
 
 void lightShow2(int num){
   int k = 0;
-  
+ for(int h = 0; h < 8; h++){
   for(int i = 0; i < 8; i++){
     for(int j = 0; j < 8; j++){
       bitClear(pinVals[i], j);
@@ -48,19 +40,13 @@ void lightShow2(int num){
   }
 
   k++;
-  if(k > 7){
-    k = 0;
-  }
-  
-  if(k > 6) {
-    num -= 10;
-  }
   delay(num);
+ }
 }
 
 void lightShow3(int num){
   int k = 0;
-  
+ for(int h = 0; h < 8; h++){
   for(int i = 0; i < 8; i++){
     for(int j = 0; j < 8; j++){
       bitClear(pinVals[i], j);
@@ -72,21 +58,15 @@ void lightShow3(int num){
   }
    
   k++;
-  if(k > 7){
-    k = 0;
-  }
-  
-  if(k > 6) {
-    num -= 10;
-  }
   delay(num);
+ }
 }
   
 
 
 void lightShow4(int num){
   int k = 0;
-
+ for(int h = 0; h < 8; h++){
   for(int i = 0; i < 8; i++){
     for(int j = 0; j < 8; j++){
       bitClear(pinVals[i], j);
@@ -98,17 +78,12 @@ void lightShow4(int num){
   }
 
   k--;
-  if(k < 0){
-    k = 7;
-  }
-
-  if(k > 6) {
-    num -= 10;
-  }
   delay(num); 
+ }
 }
 
 void lightShow5(int num){
+ for(int h = 0; h < 8; h++){
   for(int i = 0; i < 8; i++){
     for(int j = 0; j < 8; j++){
       bitClear(pinVals[i], j);
@@ -123,18 +98,14 @@ void lightShow5(int num){
 
   digitalWrite(zLayer, HIGH);
   zLayer++;
-  if(zLayer > 9){
-    zLayer = 2;
-  }
   digitalWrite(zLayer, LOW);
 
-  if(zLayer > 8) {
-    num -= 10;
-  }
   delay(num);
+ }
 }
 
 void lightShow6(int num){
+ for(int h = 0; h < 8; h++){
   for(int i = 0; i < 8; i++){
     for(int j = 0; j < 8; j++){
       bitClear(pinVals[i], j);
@@ -149,15 +120,9 @@ void lightShow6(int num){
 
   digitalWrite(zLayer, HIGH);
   zLayer++;
-  if(zLayer > 9){
-    zLayer = 2;
-  }
   digitalWrite(zLayer, LOW);
-
-  if(zLayer > 8) {
-    num -= 10;
-  }
   delay(num);
+ }
 }
 
 void chooseLightShow(int lightShow, int num){
@@ -217,11 +182,12 @@ void loop(){
 
   if(num > 10){
     chooseLightShow(lightShow, num);
+    num -= 10;
   }else{
     lightShow++;
     if(lightShow > 6){
       lightShow = 1;
     }
-    num = 120;
-  } 
+  }
+  num = 120; 
 }
